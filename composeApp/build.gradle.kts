@@ -59,6 +59,9 @@ kotlin {
             implementation(libs.kotlin.test)
         }
         desktopMain.dependencies {
+            //network
+            implementation(libs.ktor.client.okhttp)
+
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutinesSwing)
         }

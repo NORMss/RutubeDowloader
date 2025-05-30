@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 
 @Composable
 fun HomeScreen(
+    state: HomeState,
     setVideoUrl: (String) -> Unit,
 ) {
     Column(
@@ -23,7 +24,7 @@ fun HomeScreen(
             horizontalArrangement = Arrangement.Center,
         ) {
             TextField(
-                value = "",
+                value = state.videoUrl,
                 onValueChange = setVideoUrl,
                 label = {
                     Text(
