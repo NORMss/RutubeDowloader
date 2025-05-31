@@ -11,7 +11,6 @@ import io.ktor.client.utils.EmptyContent.contentType
 import jdk.javadoc.internal.doclets.formats.html.markup.HtmlStyle
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.serialization.SerializationException
-import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.plugins.onUpload
 import io.ktor.client.request.forms.formData
@@ -32,12 +31,14 @@ import io.ktor.utils.io.InternalAPI
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.io.IOException
-import kotlinx.serialization.SerializationException
+import ru.normno.rutubedownloader.util.Constats.BASE_URL
 import ru.normno.rutubedownloader.util.errorhendling.RemoteErrorWithCode
 import java.net.UnknownHostException
 import kotlin.collections.component1
 import kotlin.collections.component2
 import kotlin.collections.forEach
+import ru.normno.rutubedownloader.util.errorhendling.Result
+import ru.normno.rutubedownloader.util.errorhendling.Error
 
 class KtorApiClient(
     val httpClient: HttpClient,
@@ -56,7 +57,7 @@ class KtorApiClient(
                 }
 
                 headers.forEach { (key, value) ->
-                    HtmlStyle.header(key, value)
+                    header(key, value)
                 }
 
             }
@@ -82,7 +83,7 @@ class KtorApiClient(
                 setBody(body)
 
                 headers.forEach { (key, value) ->
-                    HtmlStyle.header(key, value)
+                    header(key, value)
                 }
 
             }
