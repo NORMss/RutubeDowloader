@@ -1,20 +1,7 @@
 package ru.normno.rutubedownloader.data.remote
 
 import io.ktor.client.HttpClient
-import io.ktor.client.request.forms.formData
-import io.ktor.client.request.forms.submitFormWithBinaryData
-import io.ktor.client.request.get
-import io.ktor.client.request.parameter
-import io.ktor.client.request.post
-import io.ktor.client.request.setBody
-import io.ktor.client.utils.EmptyContent.contentType
-import jdk.javadoc.internal.doclets.formats.html.markup.HtmlStyle
-import kotlinx.coroutines.flow.channelFlow
-import kotlinx.serialization.SerializationException
 import io.ktor.client.call.body
-import io.ktor.client.plugins.onUpload
-import io.ktor.client.request.forms.formData
-import io.ktor.client.request.forms.submitFormWithBinaryData
 import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.request.parameter
@@ -23,22 +10,14 @@ import io.ktor.client.request.setBody
 import io.ktor.client.request.url
 import io.ktor.client.statement.HttpResponse
 import io.ktor.http.ContentType
-import io.ktor.http.Headers
-import io.ktor.http.HttpHeaders
 import io.ktor.http.contentType
 import io.ktor.utils.io.CancellationException
-import io.ktor.utils.io.InternalAPI
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.channelFlow
-import kotlinx.io.IOException
+import kotlinx.serialization.SerializationException
 import ru.normno.rutubedownloader.util.Constats.BASE_URL
-import ru.normno.rutubedownloader.util.errorhendling.RemoteErrorWithCode
-import java.net.UnknownHostException
-import kotlin.collections.component1
-import kotlin.collections.component2
-import kotlin.collections.forEach
-import ru.normno.rutubedownloader.util.errorhendling.Result
 import ru.normno.rutubedownloader.util.errorhendling.Error
+import ru.normno.rutubedownloader.util.errorhendling.RemoteErrorWithCode
+import ru.normno.rutubedownloader.util.errorhendling.Result
+import java.net.UnknownHostException
 
 class KtorApiClient(
     val httpClient: HttpClient,
