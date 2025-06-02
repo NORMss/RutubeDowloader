@@ -16,7 +16,7 @@ class HomeViewModel(
     val state: StateFlow<HomeState>
         field = MutableStateFlow(HomeState())
 
-    fun setVideUrl(string: String) {
+    fun setVideoUrl(string: String) {
         state.update {
             it.copy(
                 videoUrlWithId = string,
@@ -26,18 +26,31 @@ class HomeViewModel(
 
     fun getVideoById() {
         viewModelScope.launch(Dispatchers.IO) {
-            val result = downloaderRepository.getVideoById(state.value.videoUrlWithId)
-            when (result) {
-                is Result.Error -> {
-
-                }
-
-                is Result.Success -> {
-                    state.update {
-                        it.copy(
-                            videoUrlM3U8 = result.data
-                        )
+            state.value.videoUrlWithId.let { url ->
+                val result = downloaderRepository.getVideoById(
+                    if (url.contains("video")) {
+                        url.substringAfter("video/").substringBefore("/")
+                    } else {
+                        url
                     }
+                )
+                when (result) {
+                    is Result.Error -> {
+
+                    }
+
+                    is Result.Success -> {
+                        state.update {
+                            it.copy(
+                                videoUrlM3U8 = result.data
+                            )
+                        }
+                    }
+                }
+            }
+            state.value.videoUrlM3U8?.videoUrl?.m3u8Playlist?.let { url ->
+                downloaderRepository.downloadVideoPlaylist(url).also {
+                    println(it.data)
                 }
             }
         }

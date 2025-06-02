@@ -2,6 +2,7 @@ package ru.normno.rutubedownloader.data.remote
 
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
+import io.ktor.client.plugins.onDownload
 import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.request.parameter
@@ -65,6 +66,21 @@ class KtorApiClient(
                     header(key, value)
                 }
 
+            }
+        }
+    }
+
+    suspend fun downloadFile(
+        fileUrl: String,
+        onProgress: (Float) -> Unit = {}
+    ): Result<ByteArray, Error> {
+        return saveCall {
+            httpClient.get(fileUrl) {
+                onDownload { bytesSentTotal, contentLength ->
+                    if (contentLength != null) {
+                        onProgress(bytesSentTotal.toFloat() / contentLength)
+                    }
+                }
             }
         }
     }

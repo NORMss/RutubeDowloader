@@ -12,4 +12,8 @@ class DownloaderRepositoryImpl(
     override suspend fun getVideoById(id: String): Result<Video, Error> {
         return ruTubeVideo.getVideoById(id = id)
     }
+
+    override suspend fun downloadVideoPlaylist(url: String): Result<ByteArray, Error> {
+        return ruTubeVideo.downloadVideoPlaylist(url = url)
+    }
 }

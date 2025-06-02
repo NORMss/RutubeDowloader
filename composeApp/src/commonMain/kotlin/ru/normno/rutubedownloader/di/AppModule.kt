@@ -2,7 +2,7 @@ package ru.normno.rutubedownloader.di
 
 import io.ktor.client.HttpClient
 import org.koin.core.context.GlobalContext.startKoin
-import org.koin.core.module.dsl.viewModelOf
+import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 import ru.normno.rutubedownloader.data.remote.KtorApiClient
 import ru.normno.rutubedownloader.data.remote.api.RuTubeVideo
@@ -15,16 +15,18 @@ import ru.normno.rutubedownloader.presentation.home.HomeViewModel
 object AppModule {
     fun initializeKoin() {
         startKoin {
-            modules(appModules)
+            modules(
+                networkModule,
+                ktorApiClient,
+                ruTubeVideo,
+                downloaderRepository,
+                homeViewModel,
+            )
         }
     }
 
-    private val appModules = module {
-        viewModelOf(::HomeViewModel)
-        networkModule
-        ktorApiClient
-        ruTubeVideo
-        downloaderRepository
+    private val homeViewModel = module {
+        viewModel { HomeViewModel(get()) }
     }
 
     private val downloaderRepository = module {

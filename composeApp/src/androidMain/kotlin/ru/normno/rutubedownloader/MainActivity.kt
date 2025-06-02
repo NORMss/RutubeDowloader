@@ -10,7 +10,6 @@ import ru.normno.rutubedownloader.di.AppModule.initializeKoin
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
-        initializeKoin()
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
 

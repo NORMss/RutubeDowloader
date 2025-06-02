@@ -14,4 +14,10 @@ class RuTubeVideo(
             parameters = mapOf("format" to "json"),
         )
     }
+
+    suspend fun downloadVideoPlaylist(url: String): Result<ByteArray, Error> {
+        return ktorApiClient.downloadFile(
+            fileUrl = url,
+        )
+    }
 }

@@ -4,8 +4,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.koin.compose.viewmodel.koinViewModel
 import ru.normno.rutubedownloader.presentation.home.HomeScreen
 import ru.normno.rutubedownloader.presentation.home.HomeViewModel
 
@@ -13,11 +13,11 @@ import ru.normno.rutubedownloader.presentation.home.HomeViewModel
 @Preview
 fun App() {
     MaterialTheme {
-        val viewModel = viewModel<HomeViewModel>()
+        val viewModel = koinViewModel<HomeViewModel>()
         val state by viewModel.state.collectAsStateWithLifecycle()
         HomeScreen(
             state = state,
-            setVideoUrl = viewModel::setVideUrl,
+            setVideoUrl = viewModel::setVideoUrl,
             onGetVideo = viewModel::getVideoById
         )
     }
