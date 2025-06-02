@@ -18,6 +18,7 @@ fun App() {
         HomeScreen(
             state = state,
             setVideoUrl = viewModel::setVideUrl,
+            onGetVideo = viewModel::getVideoById
         )
     }
 }

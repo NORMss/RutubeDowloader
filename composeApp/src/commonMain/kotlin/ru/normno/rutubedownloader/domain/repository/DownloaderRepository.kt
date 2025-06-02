@@ -1,7 +1,9 @@
 package ru.normno.rutubedownloader.domain.repository
 
 import ru.normno.rutubedownloader.domain.model.Video
+import ru.normno.rutubedownloader.util.errorhendling.Error
+import ru.normno.rutubedownloader.util.errorhendling.Result
 
 interface DownloaderRepository {
-    fun getVideoById(id: String): Video
+    suspend fun getVideoById(id: String): Result<Video, Error>
 }

@@ -8,6 +8,8 @@ import ru.normno.rutubedownloader.data.remote.KtorApiClient
 import ru.normno.rutubedownloader.data.remote.api.RuTubeVideo
 import ru.normno.rutubedownloader.data.remote.buildHttpClient
 import ru.normno.rutubedownloader.data.remote.getHttpEngine
+import ru.normno.rutubedownloader.data.repository.DownloaderRepositoryImpl
+import ru.normno.rutubedownloader.domain.repository.DownloaderRepository
 import ru.normno.rutubedownloader.presentation.home.HomeViewModel
 
 object AppModule {
@@ -19,9 +21,14 @@ object AppModule {
 
     private val appModules = module {
         viewModelOf(::HomeViewModel)
-        provideHttpClient()
+        networkModule
         ktorApiClient
         ruTubeVideo
+        downloaderRepository
+    }
+
+    private val downloaderRepository = module {
+        single<DownloaderRepository> { DownloaderRepositoryImpl(get()) }
     }
 
     private val ruTubeVideo = module {
@@ -30,6 +37,10 @@ object AppModule {
 
     private val ktorApiClient = module {
         single<KtorApiClient> { KtorApiClient(get()) }
+    }
+
+    private val networkModule = module {
+        single { provideHttpClient() }
     }
 
     private fun provideHttpClient(): HttpClient {
