@@ -19,8 +19,12 @@ ktor = "3.1.3"
 koin = "4.0.4"
 coil = "3.2.0"
 filekit = "0.10.0-beta04"
+materialIconsExtended = "1.7.3"
 
 [libraries]
+#icons
+material-icons-extended = { module = "org.jetbrains.compose.material:material-icons-extended", version.ref = "materialIconsExtended" }
+
 #files
 filekit-core = { module = "io.github.vinceglb:filekit-core", version.ref = "filekit" }
 filekit-dialogs = { module = "io.github.vinceglb:filekit-dialogs", version.ref = "filekit" }

@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ru.normno.rutubedownloader.domain.repository.DownloaderRepository
 import ru.normno.rutubedownloader.util.errorhendling.Result
+import ru.normno.rutubedownloader.util.video.ParseM3U8Playlist.parseM3U8Playlist
 
 class HomeViewModel(
     private val downloaderRepository: DownloaderRepository,
@@ -49,8 +50,17 @@ class HomeViewModel(
                 }
             }
             state.value.videoUrlM3U8?.videoUrl?.m3u8Playlist?.let { url ->
-                downloaderRepository.downloadVideoPlaylist(url).also {
-                    println(it.data)
+                val result = downloaderRepository.downloadVideoPlaylist(url)
+                when (result) {
+                    is Result.Error -> {
+
+                    }
+
+                    is Result.Success -> {
+                        result.data?.decodeToString()?.let {
+                            println(parseM3U8Playlist(it))
+                        }
+                    }
                 }
             }
         }

@@ -74,7 +74,7 @@ class KtorApiClient(
         fileUrl: String,
         onProgress: (Float) -> Unit = {}
     ): Result<ByteArray, Error> {
-        return saveCall {
+        return saveCall<ByteArray> {
             httpClient.get(fileUrl) {
                 onDownload { bytesSentTotal, contentLength ->
                     if (contentLength != null) {

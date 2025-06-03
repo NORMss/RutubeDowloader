@@ -34,6 +34,9 @@ kotlin {
             implementation(libs.ktor.client.okhttp)
         }
         commonMain.dependencies {
+            //icons
+            implementation(libs.material.icons.extended)
+
             //files
             implementation(libs.filekit.core)
             implementation(libs.filekit.dialogs)
