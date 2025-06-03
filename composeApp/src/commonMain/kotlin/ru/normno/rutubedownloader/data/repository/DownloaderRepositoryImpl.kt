@@ -16,4 +16,11 @@ class DownloaderRepositoryImpl(
     override suspend fun downloadVideoPlaylist(url: String): Result<ByteArray, Error> {
         return ruTubeVideo.downloadVideoPlaylist(url = url)
     }
+
+    override suspend fun downloadHlsStream(url: String, onProgress: (Float) -> Unit): Result<ByteArray, Error> {
+        return ruTubeVideo.downloadHlsStream(
+            url = url,
+            onProgress = onProgress,
+        )
+    }
 }

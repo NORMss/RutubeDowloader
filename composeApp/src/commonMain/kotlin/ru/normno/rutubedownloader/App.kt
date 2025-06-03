@@ -18,6 +18,8 @@ fun App() {
         HomeScreen(
             state = state,
             setVideoUrl = viewModel::setVideoUrl,
+            onSelectedVideoQuality = viewModel::onSelectedVideoQuality,
+            onDownloadVideo = viewModel::onDownloadVideo,
             onGetVideo = viewModel::getVideoById
         )
     }

@@ -11,12 +11,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SegmentedButtonDefaults.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -29,11 +30,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import ru.normno.rutubedownloader.util.video.ParseM3U8Playlist.VideoQuality
 
 @Composable
 fun HomeScreen(
     state: HomeState,
     setVideoUrl: (String) -> Unit,
+    onSelectedVideoQuality: (VideoQuality) -> Unit,
+    onDownloadVideo: () -> Unit,
     onGetVideo: () -> Unit,
 ) {
     var isSelectedResolution by remember {
@@ -42,6 +46,7 @@ fun HomeScreen(
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -59,8 +64,6 @@ fun HomeScreen(
         }
         Button(
             onClick = onGetVideo,
-            modifier = Modifier
-                .align(Alignment.CenterHorizontally),
         ) {
             Text(
                 text = "Get Video"
@@ -69,7 +72,7 @@ fun HomeScreen(
         Text(
             text = state.videoUrlM3U8?.title ?: "",
         )
-        state.videoQuality?.let { videoQuality ->
+        if (state.videoQualities.isNotEmpty()) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -84,7 +87,7 @@ fun HomeScreen(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Text(
-                        text = videoQuality.resolution,
+                        text = state.selectedVideoQuality?.resolution ?: "",
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                     )
@@ -96,7 +99,7 @@ fun HomeScreen(
                         imageVector = Icons.Default.ArrowDropDown,
                         contentDescription = null,
                         modifier = Modifier
-                            .rotate(if (isSelectStegoMethod) 180f else 0f),
+                            .rotate(if (isSelectedResolution) 180f else 0f),
                     )
                 }
                 Spacer(
@@ -104,27 +107,38 @@ fun HomeScreen(
                         .height(8.dp)
                 )
                 DropdownMenu(
-                    expanded = isSelectStegoMethod,
-                    onDismissRequest = { isSelectStegoMethod = false },
+                    expanded = isSelectedResolution,
+                    onDismissRequest = { isSelectedResolution = false },
                 ) {
-                    listOf(
-                        StegoImageMethod.KJB,
-                        StegoImageMethod.LSBMR,
-                        StegoImageMethod.INMI,
-                        StegoImageMethod.IMNP,
-                    ).forEach { method ->
+                    state.videoQualities.forEach { video ->
                         DropdownMenuItem(
                             onClick = {
-                                onSelectStegoMethod(method)
-                                isSelectStegoMethod = false
+                                isSelectedResolution = false
+                                onSelectedVideoQuality(video)
+                            },
+                            leadingIcon = {
+                                Icon(
+                                    imageVector = Icons.Default.ArrowDropDown,
+                                    contentDescription = null,
+                                )
                             },
                             text = {
-                                Text(text = method::class.simpleName ?: "Unknown")
+                                Text(text = "${video.resolution} ${video.codecs}")
                             }
                         )
                     }
                 }
             }
+            Button(
+                onClick = onDownloadVideo,
+            ) {
+                Text(
+                    text = "Download"
+                )
+            }
+            CircularProgressIndicator(
+                progress = { state.downloadProgress },
+            )
         }
     }
 }

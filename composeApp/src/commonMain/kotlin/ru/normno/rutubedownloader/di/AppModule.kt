@@ -1,5 +1,6 @@
 package ru.normno.rutubedownloader.di
 
+import io.github.vinceglb.filekit.FileKit
 import io.ktor.client.HttpClient
 import org.koin.core.context.GlobalContext.startKoin
 import org.koin.core.module.dsl.viewModel
@@ -9,7 +10,9 @@ import ru.normno.rutubedownloader.data.remote.api.RuTubeVideo
 import ru.normno.rutubedownloader.data.remote.buildHttpClient
 import ru.normno.rutubedownloader.data.remote.getHttpEngine
 import ru.normno.rutubedownloader.data.repository.DownloaderRepositoryImpl
+import ru.normno.rutubedownloader.data.repository.FileRepositoryImpl
 import ru.normno.rutubedownloader.domain.repository.DownloaderRepository
+import ru.normno.rutubedownloader.domain.repository.FileRepository
 import ru.normno.rutubedownloader.presentation.home.HomeViewModel
 
 object AppModule {
@@ -17,16 +20,22 @@ object AppModule {
         startKoin {
             modules(
                 networkModule,
+                localModule,
                 ktorApiClient,
                 ruTubeVideo,
                 downloaderRepository,
+                fileRepository,
                 homeViewModel,
             )
         }
     }
 
     private val homeViewModel = module {
-        viewModel { HomeViewModel(get()) }
+        viewModel { HomeViewModel(get(), get()) }
+    }
+
+    private val fileRepository = module {
+        single<FileRepository> { FileRepositoryImpl(get()) }
     }
 
     private val downloaderRepository = module {
@@ -45,9 +54,15 @@ object AppModule {
         single { provideHttpClient() }
     }
 
+    private val localModule = module {
+        single { fileKit }
+    }
+
     private fun provideHttpClient(): HttpClient {
         return buildHttpClient(httpEngine)
     }
+
+    private val fileKit = FileKit
 
     private val httpEngine by lazy { getHttpEngine() }
 }

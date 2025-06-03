@@ -8,11 +8,17 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ru.normno.rutubedownloader.domain.repository.DownloaderRepository
+import ru.normno.rutubedownloader.domain.repository.FileRepository
 import ru.normno.rutubedownloader.util.errorhendling.Result
+import ru.normno.rutubedownloader.util.video.ParseM3U8Playlist.VideoQuality
 import ru.normno.rutubedownloader.util.video.ParseM3U8Playlist.parseM3U8Playlist
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 
+@OptIn(ExperimentalTime::class)
 class HomeViewModel(
     private val downloaderRepository: DownloaderRepository,
+    private val fileRepository: FileRepository,
 ) : ViewModel() {
     val state: StateFlow<HomeState>
         field = MutableStateFlow(HomeState())
@@ -22,6 +28,38 @@ class HomeViewModel(
             it.copy(
                 videoUrlWithId = string,
             )
+        }
+    }
+
+    fun onSelectedVideoQuality(videoQuality: VideoQuality) {
+        state.update {
+            it.copy(
+                selectedVideoQuality = videoQuality,
+            )
+        }
+    }
+
+    fun onDownloadVideo() {
+        state.value.selectedVideoQuality?.let { videoQuality ->
+            viewModelScope.launch(Dispatchers.Default) {
+                val video = downloaderRepository.downloadHlsStream(
+                    url = videoQuality.url,
+                    onProgress = { progrss ->
+                        state.update {
+                            it.copy(
+                                downloadProgress = progrss
+                            )
+                        }
+                    }
+                )
+                video.data?.let {
+                    fileRepository.saveVideo(
+                        byteArray = video.data,
+                        name = state.value.videoUrlM3U8?.title
+                            ?: Clock.System.now().epochSeconds.toString(),
+                    )
+                }
+            }
         }
     }
 
@@ -57,8 +95,14 @@ class HomeViewModel(
                     }
 
                     is Result.Success -> {
-                        result.data?.decodeToString()?.let {
-                            println(parseM3U8Playlist(it))
+                        result.data?.decodeToString()?.let { m3u8 ->
+                            val videoQualities = parseM3U8Playlist(m3u8)
+                            state.update {
+                                it.copy(
+                                    videoQualities = videoQualities,
+                                    selectedVideoQuality = videoQualities.first(),
+                                )
+                            }
                         }
                     }
                 }

@@ -10,9 +10,15 @@ import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.client.request.url
 import io.ktor.client.statement.HttpResponse
+import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import io.ktor.utils.io.CancellationException
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import kotlinx.serialization.SerializationException
 import ru.normno.rutubedownloader.util.Constats.BASE_URL
 import ru.normno.rutubedownloader.util.errorhendling.Error
@@ -83,6 +89,57 @@ class KtorApiClient(
                 }
             }
         }
+    }
+
+    suspend fun downloadHlsStream(
+        playlistUrl: String,
+        onProgress: (Float) -> Unit = {}
+    ): Result<ByteArray, Error> = coroutineScope {
+
+        val playlist = httpClient.get(playlistUrl).bodyAsText()
+
+
+        val lines = playlist.lines()
+        val segmentUrls = lines
+            .filter { it.isNotBlank() && !it.startsWith("#") }
+
+        if (segmentUrls.isEmpty()) {
+            return@coroutineScope Result.Error(
+                RemoteErrorWithCode(Error.Remote.UNKNOWN)
+            )
+        }
+
+        val baseUrl = playlistUrl.substringBeforeLast("/") + "/"
+
+        val total = segmentUrls.size
+        val downloadedSegments = mutableListOf<Deferred<ByteArray?>>()
+
+        segmentUrls.forEachIndexed { index, relativePath ->
+            val segmentUrl = if (relativePath.startsWith("http")) relativePath else baseUrl + relativePath
+
+            val deferred = async(Dispatchers.IO) {
+                val segmentResult = downloadFile(segmentUrl)
+                if (segmentResult is Result.Success) {
+                    onProgress((index + 1).toFloat() / total)
+                    segmentResult.data
+                } else {
+                    null
+                }
+            }
+            downloadedSegments.add(deferred)
+        }
+
+        val resultBytes = downloadedSegments.awaitAll()
+
+        if (resultBytes.any { it == null }) {
+            return@coroutineScope Result.Error(
+                RemoteErrorWithCode(Error.Remote.UNKNOWN)
+            )
+        }
+
+        val merged = resultBytes.filterNotNull().reduce { acc, bytes -> acc + bytes }
+
+        Result.Success(merged)
     }
 
     suspend inline fun <reified R> saveCall(

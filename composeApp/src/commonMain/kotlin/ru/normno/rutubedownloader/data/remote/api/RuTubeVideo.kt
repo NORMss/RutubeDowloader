@@ -20,4 +20,11 @@ class RuTubeVideo(
             fileUrl = url,
         )
     }
+
+    suspend fun downloadHlsStream(url: String, onProgress: (Float) -> Unit = {}): Result<ByteArray, Error> {
+        return ktorApiClient.downloadHlsStream(
+            playlistUrl = url,
+            onProgress = onProgress,
+        )
+    }
 }

@@ -6,5 +6,6 @@ import ru.normno.rutubedownloader.util.errorhendling.Result
 
 interface DownloaderRepository {
     suspend fun getVideoById(id: String): Result<Video, Error>
-    suspend fun downloadVideoPlaylist(url: String): Result<ByteArray, Error>
+    suspend fun downloadVideoPlaylist(url: String, ): Result<ByteArray, Error>
+    suspend fun downloadHlsStream(url: String, onProgress: (Float) -> Unit): Result<ByteArray, Error>
 }
