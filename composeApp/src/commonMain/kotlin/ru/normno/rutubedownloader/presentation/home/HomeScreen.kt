@@ -116,12 +116,6 @@ fun HomeScreen(
                                 isSelectedResolution = false
                                 onSelectedVideoQuality(video)
                             },
-                            leadingIcon = {
-                                Icon(
-                                    imageVector = Icons.Default.ArrowDropDown,
-                                    contentDescription = null,
-                                )
-                            },
                             text = {
                                 Text(text = "${video.resolution} ${video.codecs}")
                             }

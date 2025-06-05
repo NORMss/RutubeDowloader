@@ -1,5 +1,6 @@
 package ru.normno.rutubedownloader.data.remote
 
+import io.github.vinceglb.filekit.dialogs.FileKitType
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.plugins.onDownload
@@ -25,6 +26,7 @@ import ru.normno.rutubedownloader.util.errorhendling.Error
 import ru.normno.rutubedownloader.util.errorhendling.RemoteErrorWithCode
 import ru.normno.rutubedownloader.util.errorhendling.Result
 import java.net.UnknownHostException
+import kotlin.io.writeBytes
 
 class KtorApiClient(
     val httpClient: HttpClient,
@@ -140,6 +142,58 @@ class KtorApiClient(
         val merged = resultBytes.filterNotNull().reduce { acc, bytes -> acc + bytes }
 
         Result.Success(merged)
+    }
+
+    suspend fun downloadHlsStreamTest(
+        playlistUrl: String,
+        outputFileName: String,
+        onProgress: (Float) -> Unit = {}
+    ): Result<Int, Error> = coroutineScope {
+        val playlist = httpClient.get(playlistUrl).bodyAsText()
+
+        val lines = playlist.lines()
+        val segmentUrls = lines
+            .filter { it.isNotBlank() && !it.startsWith("#") }
+
+        if (segmentUrls.isEmpty()) {
+            return@coroutineScope Result.Error(
+                RemoteErrorWithCode(Error.Remote.UNKNOWN)
+            )
+        }
+
+        val baseUrl = playlistUrl.substringBeforeLast("/") + "/"
+        val totalSegments = segmentUrls.size
+        val downloadedSegments = mutableListOf<Deferred<ByteArray?>>()
+
+        segmentUrls.forEachIndexed { index, relativePath ->
+            val segmentUrl = if (relativePath.startsWith("http")) relativePath else baseUrl + relativePath
+            val deferred = async(Dispatchers.IO) {
+                val segmentResult = downloadFile(segmentUrl)
+                if (segmentResult is Result.Success) {
+                    onProgress((index + 1).toFloat() / totalSegments)
+                    segmentResult.data
+                } else {
+                    null
+                }
+            }
+            downloadedSegments.add(deferred)
+        }
+
+        val resultBytes = downloadedSegments.awaitAll()
+        if (resultBytes.any { it == null }) {
+            return@coroutineScope Result.Error(
+                RemoteErrorWithCode(Error.Remote.UNKNOWN)
+            )
+        }
+        val mergedBytes = resultBytes.filterNotNull().reduce { acc, bytes -> acc + bytes }
+
+        return@coroutineScope try {
+            val file = FileKitType.File(outputFileName)
+//            file = (mergedBytes)
+            Result.Success(file.extensions?.size)
+        } catch (e: Exception) {
+            Result.Error(RemoteErrorWithCode(Error.Remote.UNKNOWN))
+        }
     }
 
     suspend inline fun <reified R> saveCall(
