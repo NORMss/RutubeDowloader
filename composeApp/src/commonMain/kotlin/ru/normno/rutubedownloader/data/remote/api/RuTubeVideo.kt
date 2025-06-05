@@ -2,6 +2,7 @@ package ru.normno.rutubedownloader.data.remote.api
 
 import ru.normno.rutubedownloader.data.remote.KtorApiClient
 import ru.normno.rutubedownloader.domain.model.Video
+import ru.normno.rutubedownloader.util.dowload.Progress
 import ru.normno.rutubedownloader.util.errorhendling.Error
 import ru.normno.rutubedownloader.util.errorhendling.Result
 
@@ -21,9 +22,14 @@ class RuTubeVideo(
         )
     }
 
-    suspend fun downloadHlsStream(url: String, onProgress: (Float) -> Unit = {}): Result<ByteArray, Error> {
-        return ktorApiClient.downloadHlsStream(
+    suspend fun downloadHlsStream(
+        url: String,
+        name: String,
+        onProgress: (Progress.DownloadProgress) -> Unit = {}
+    ): Result<Long, Error> {
+        return ktorApiClient.downloadHlsStreamToFile(
             playlistUrl = url,
+            outputFileName = name,
             onProgress = onProgress,
         )
     }

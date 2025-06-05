@@ -10,6 +10,7 @@ import kotlinx.coroutines.launch
 import ru.normno.rutubedownloader.domain.repository.DownloaderRepository
 import ru.normno.rutubedownloader.domain.repository.FileRepository
 import ru.normno.rutubedownloader.util.errorhendling.Result
+import ru.normno.rutubedownloader.util.validate.SanitizeFileName.sanitizeFileName
 import ru.normno.rutubedownloader.util.video.ParseM3U8Playlist.VideoQuality
 import ru.normno.rutubedownloader.util.video.ParseM3U8Playlist.parseM3U8Playlist
 import kotlin.time.Clock
@@ -42,66 +43,70 @@ class HomeViewModel(
     fun onDownloadVideo() {
         state.value.selectedVideoQuality?.let { videoQuality ->
             viewModelScope.launch(Dispatchers.Default) {
-                val video = downloaderRepository.downloadHlsStream(
+                downloaderRepository.downloadHlsStream(
                     url = videoQuality.url,
-                    onProgress = { progrss ->
+                    name = sanitizeFileName(
+                        state.value.videoUrlM3U8?.title
+                            ?: Clock.System.now().epochSeconds.toString()
+                    ) + ".mp4",
+                    onProgress = { downloadProgress ->
                         state.update {
                             it.copy(
-                                downloadProgress = progrss
+                                downloadProgress = downloadProgress,
                             )
                         }
                     }
                 )
-                video.data?.let {
-                    fileRepository.saveVideo(
-                        byteArray = video.data,
-                        name = state.value.videoUrlM3U8?.title
-                            ?: Clock.System.now().epochSeconds.toString(),
-                    )
-                }
+            }
+            state.update {
+                it.copy(
+                    downloadProgress = downloadProgress,
+                )
             }
         }
     }
 
     fun getVideoById() {
-        viewModelScope.launch(Dispatchers.IO) {
-            state.value.videoUrlWithId.let { url ->
-                val result = downloaderRepository.getVideoById(
-                    if (url.contains("video")) {
-                        url.substringAfter("video/").substringBefore("/")
-                    } else {
-                        url
-                    }
-                )
-                when (result) {
-                    is Result.Error -> {
+        if (state.value.videoUrlWithId.isNotBlank()) {
+            viewModelScope.launch(Dispatchers.IO) {
+                state.value.videoUrlWithId.let { url ->
+                    val result = downloaderRepository.getVideoById(
+                        if (url.contains("video")) {
+                            url.substringAfter("video/").substringBefore("/")
+                        } else {
+                            url
+                        }
+                    )
+                    when (result) {
+                        is Result.Error -> {
 
-                    }
+                        }
 
-                    is Result.Success -> {
-                        state.update {
-                            it.copy(
-                                videoUrlM3U8 = result.data
-                            )
+                        is Result.Success -> {
+                            state.update {
+                                it.copy(
+                                    videoUrlM3U8 = result.data
+                                )
+                            }
                         }
                     }
                 }
-            }
-            state.value.videoUrlM3U8?.videoUrl?.m3u8Playlist?.let { url ->
-                val result = downloaderRepository.downloadVideoPlaylist(url)
-                when (result) {
-                    is Result.Error -> {
+                state.value.videoUrlM3U8?.videoUrl?.m3u8Playlist?.let { url ->
+                    val result = downloaderRepository.downloadVideoPlaylist(url)
+                    when (result) {
+                        is Result.Error -> {
 
-                    }
+                        }
 
-                    is Result.Success -> {
-                        result.data?.decodeToString()?.let { m3u8 ->
-                            val videoQualities = parseM3U8Playlist(m3u8)
-                            state.update {
-                                it.copy(
-                                    videoQualities = videoQualities,
-                                    selectedVideoQuality = videoQualities.first(),
-                                )
+                        is Result.Success -> {
+                            result.data?.decodeToString()?.let { m3u8 ->
+                                val videoQualities = parseM3U8Playlist(m3u8)
+                                state.update {
+                                    it.copy(
+                                        videoQualities = videoQualities,
+                                        selectedVideoQuality = videoQualities.first(),
+                                    )
+                                }
                             }
                         }
                     }

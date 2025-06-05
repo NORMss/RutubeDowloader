@@ -26,13 +26,13 @@ fun buildHttpClient(engine: HttpClientEngine): HttpClient {
             pingIntervalMillis = 300
         }
 
-        install(Logging) {
-            logger = object : Logger {
-                override fun log(message: String) {
-                    println(message)
-                }
-            }
-            level = LogLevel.ALL
-        }
+//        install(Logging) {
+//            logger = object : Logger {
+//                override fun log(message: String) {
+//                    println(message)
+//                }
+//            }
+//            level = LogLevel.ALL
+//        }
     }
 }

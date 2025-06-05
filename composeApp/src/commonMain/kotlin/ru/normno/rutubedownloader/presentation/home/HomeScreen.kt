@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalTime::class)
+
 package ru.normno.rutubedownloader.presentation.home
 
 import androidx.compose.foundation.clickable
@@ -21,7 +23,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -30,7 +34,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import ru.normno.rutubedownloader.util.dowload.Progress.formatSpeed
 import ru.normno.rutubedownloader.util.video.ParseM3U8Playlist.VideoQuality
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 
 @Composable
 fun HomeScreen(
@@ -42,6 +49,18 @@ fun HomeScreen(
 ) {
     var isSelectedResolution by remember {
         mutableStateOf(false)
+    }
+    var downloadSpeed by remember {
+        mutableStateOf("0 B/s")
+    }
+    var startTime by remember {
+        mutableLongStateOf(0L)
+    }
+    var elapsedTimeSec by remember {
+        mutableStateOf(0f)
+    }
+    LaunchedEffect(state.downloadProgress.totalDownloadedBytes) {
+        elapsedTimeSec = (Clock.System.now().toEpochMilliseconds() - startTime) / 1000f
     }
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -124,14 +143,20 @@ fun HomeScreen(
                 }
             }
             Button(
-                onClick = onDownloadVideo,
+                onClick = {
+                    onDownloadVideo()
+                    startTime = Clock.System.now().toEpochMilliseconds()
+                },
             ) {
                 Text(
                     text = "Download"
                 )
             }
             CircularProgressIndicator(
-                progress = { state.downloadProgress },
+                progress = { state.downloadProgress.progress },
+            )
+            Text(
+                text = formatSpeed(state.downloadProgress.totalDownloadedBytes / elapsedTimeSec)
             )
         }
     }
