@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.Button
@@ -25,15 +26,20 @@ import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import coil3.compose.AsyncImage
+import kotlinx.coroutines.CoroutineScope
 import ru.normno.rutubedownloader.util.dowload.Progress.formatSpeed
 import ru.normno.rutubedownloader.util.video.ParseM3U8Playlist.VideoQuality
 import kotlin.time.Clock
@@ -57,11 +63,23 @@ fun HomeScreen(
         mutableLongStateOf(0L)
     }
     var elapsedTimeSec by remember {
-        mutableStateOf(0f)
+        mutableFloatStateOf(0f)
     }
     LaunchedEffect(state.downloadProgress.totalDownloadedBytes) {
         elapsedTimeSec = (Clock.System.now().toEpochMilliseconds() - startTime) / 1000f
     }
+//    val permissionsState = rememberMultiplePermissionsState(
+//        listOf(
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+//                Manifest.permission.READ_MEDIA_IMAGES
+//                Manifest.permission.READ_MEDIA_VIDEO
+//            } else {
+//                Manifest.permission.READ_EXTERNAL_STORAGE
+//            },
+//            Manifest.permission.CAMERA,
+//        )
+//    )
+
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
@@ -83,11 +101,19 @@ fun HomeScreen(
         }
         Button(
             onClick = onGetVideo,
+            enabled = state.videoUrlWithId.isNotBlank(),
         ) {
             Text(
                 text = "Get Video"
             )
         }
+        AsyncImage(
+            model = state.videoUrlM3U8?.previewUrl,
+            contentDescription = null,
+            modifier = Modifier
+                .clip(RoundedCornerShape(16.dp))
+                .fillMaxWidth(0.9f),
+        )
         Text(
             text = state.videoUrlM3U8?.title ?: "",
         )

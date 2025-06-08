@@ -20,8 +20,15 @@ koin = "4.0.4"
 coil = "3.2.0"
 filekit = "0.10.0-beta04"
 materialIconsExtended = "1.7.3"
+icerick-permissions = "0.19.1"
+accompanist = "0.37.3"
 
 [libraries]
+#permissions
+icerock-permissions = { module = "dev.icerock.moko:permissions", version.ref = "icerick-permissions" }
+icerock-permissions-compose = { module = "dev.icerock.moko:permissions-compose", version.ref = "icerick-permissions" }
+accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanist" }
+
 #icons
 material-icons-extended = { module = "org.jetbrains.compose.material:material-icons-extended", version.ref = "materialIconsExtended" }
 

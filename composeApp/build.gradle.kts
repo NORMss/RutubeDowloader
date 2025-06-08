@@ -32,8 +32,13 @@ kotlin {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
             implementation(libs.ktor.client.okhttp)
+            implementation(libs.accompanist.permissions)
         }
         commonMain.dependencies {
+            //permissions
+            api(libs.icerock.permissions)
+            api(libs.icerock.permissions.compose)
+
             //icons
             implementation(libs.material.icons.extended)
 

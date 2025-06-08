@@ -1,7 +1,10 @@
 package ru.normno.rutubedownloader.presentation.home
 
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -56,11 +59,6 @@ class HomeViewModel(
                             )
                         }
                     }
-                )
-            }
-            state.update {
-                it.copy(
-                    downloadProgress = downloadProgress,
                 )
             }
         }
