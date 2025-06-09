@@ -21,13 +21,11 @@ class DownloaderRepositoryImpl(
     override suspend fun downloadHlsStream(
         url: String,
         name: String,
-        isSharedStorage: Boolean,
         onProgress: (Progress.DownloadProgress) -> Unit
     ): Result<Long, Error> {
         return ruTubeVideo.downloadHlsStream(
             name = name,
             url = url,
-            isSharedStorage = isSharedStorage,
             onProgress = onProgress,
         )
     }

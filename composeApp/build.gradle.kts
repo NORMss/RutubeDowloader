@@ -35,10 +35,6 @@ kotlin {
             implementation(libs.accompanist.permissions)
         }
         commonMain.dependencies {
-            //permissions
-            api(libs.icerock.permissions)
-            api(libs.icerock.permissions.compose)
-
             //icons
             implementation(libs.material.icons.extended)
 
@@ -46,13 +42,13 @@ kotlin {
             implementation(libs.filekit.core)
             implementation(libs.filekit.dialogs)
             implementation(libs.filekit.dialogs.compose)
-            implementation(libs.filekit.coil)
 
             //di
             implementation(libs.bundles.koin)
 
             //image
             implementation(libs.coil.compose)
+            implementation(libs.coil.network.ktor3)
 
             //network
             implementation(libs.ktor.client.core)

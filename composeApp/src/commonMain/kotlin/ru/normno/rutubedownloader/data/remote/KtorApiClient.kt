@@ -3,7 +3,6 @@ package ru.normno.rutubedownloader.data.remote
 import io.github.vinceglb.filekit.FileKit
 import io.github.vinceglb.filekit.PlatformFile
 import io.github.vinceglb.filekit.delete
-import io.github.vinceglb.filekit.downloadDir
 import io.github.vinceglb.filekit.filesDir
 import io.github.vinceglb.filekit.sink
 import io.github.vinceglb.filekit.size
@@ -99,7 +98,6 @@ class KtorApiClient(
     suspend fun downloadHlsStreamToFile(
         playlistUrl: String,
         outputFileName: String,
-        isSharedStorage: Boolean = false,
         onProgress: (Progress.DownloadProgress) -> Unit = { }
     ): Result<Long, Error> = coroutineScope {
         val playlist = httpClient.get(playlistUrl).bodyAsText()
@@ -117,7 +115,7 @@ class KtorApiClient(
         val baseUrl = playlistUrl.substringBeforeLast("/") + "/"
         val totalSegments = segmentUrls.size
 
-        val outputDir = if (isSharedStorage) FileKit.downloadDir else FileKit.filesDir
+        val outputDir = FileKit.filesDir
         val outputFile = PlatformFile(outputDir, outputFileName)
         val fileSink = outputFile.sink(append = false).buffered()
 

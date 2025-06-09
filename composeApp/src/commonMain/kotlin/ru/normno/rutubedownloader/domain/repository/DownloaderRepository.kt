@@ -11,7 +11,6 @@ interface DownloaderRepository {
     suspend fun downloadHlsStream(
         url: String,
         name: String,
-        isSharedStorage: Boolean = false,
         onProgress: (Progress.DownloadProgress) -> Unit = {}
     ): Result<Long, Error>
 }

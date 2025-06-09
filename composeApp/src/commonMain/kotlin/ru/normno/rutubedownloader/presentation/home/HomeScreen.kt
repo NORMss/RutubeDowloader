@@ -30,7 +30,6 @@ import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -39,7 +38,7 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
-import kotlinx.coroutines.CoroutineScope
+import ru.normno.rutubedownloader.presentation.common.PermissionManager.requestWritePermission
 import ru.normno.rutubedownloader.util.dowload.Progress.formatSpeed
 import ru.normno.rutubedownloader.util.video.ParseM3U8Playlist.VideoQuality
 import kotlin.time.Clock
@@ -56,9 +55,6 @@ fun HomeScreen(
     var isSelectedResolution by remember {
         mutableStateOf(false)
     }
-    var downloadSpeed by remember {
-        mutableStateOf("0 B/s")
-    }
     var startTime by remember {
         mutableLongStateOf(0L)
     }
@@ -68,17 +64,6 @@ fun HomeScreen(
     LaunchedEffect(state.downloadProgress.totalDownloadedBytes) {
         elapsedTimeSec = (Clock.System.now().toEpochMilliseconds() - startTime) / 1000f
     }
-//    val permissionsState = rememberMultiplePermissionsState(
-//        listOf(
-//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-//                Manifest.permission.READ_MEDIA_IMAGES
-//                Manifest.permission.READ_MEDIA_VIDEO
-//            } else {
-//                Manifest.permission.READ_EXTERNAL_STORAGE
-//            },
-//            Manifest.permission.CAMERA,
-//        )
-//    )
 
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -113,6 +98,8 @@ fun HomeScreen(
             modifier = Modifier
                 .clip(RoundedCornerShape(16.dp))
                 .fillMaxWidth(0.9f),
+            onSuccess = {println("Success: ${state.videoUrlM3U8?.previewUrl}")},
+            onError = {println("Error: ${it.result.throwable.message}")},
         )
         Text(
             text = state.videoUrlM3U8?.title ?: "",

@@ -25,13 +25,11 @@ class RuTubeVideo(
     suspend fun downloadHlsStream(
         url: String,
         name: String,
-        isSharedStorage: Boolean = false,
         onProgress: (Progress.DownloadProgress) -> Unit = {}
     ): Result<Long, Error> {
         return ktorApiClient.downloadHlsStreamToFile(
             playlistUrl = url,
             outputFileName = name,
-            isSharedStorage = isSharedStorage,
             onProgress = onProgress,
         )
     }
