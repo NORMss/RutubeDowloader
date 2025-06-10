@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
@@ -38,7 +39,7 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
-import ru.normno.rutubedownloader.presentation.common.PermissionManager.requestWritePermission
+import io.github.vinceglb.filekit.name
 import ru.normno.rutubedownloader.util.dowload.Progress.formatSpeed
 import ru.normno.rutubedownloader.util.video.ParseM3U8Playlist.VideoQuality
 import kotlin.time.Clock
@@ -98,8 +99,8 @@ fun HomeScreen(
             modifier = Modifier
                 .clip(RoundedCornerShape(16.dp))
                 .fillMaxWidth(0.9f),
-            onSuccess = {println("Success: ${state.videoUrlM3U8?.previewUrl}")},
-            onError = {println("Error: ${it.result.throwable.message}")},
+            onSuccess = { println("Success: ${state.videoUrlM3U8?.previewUrl}") },
+            onError = { println("Error: ${it.result.throwable.message}") },
         )
         Text(
             text = state.videoUrlM3U8?.title ?: "",
@@ -171,6 +172,30 @@ fun HomeScreen(
             Text(
                 text = formatSpeed(state.downloadProgress.totalDownloadedBytes / elapsedTimeSec)
             )
+        }
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxWidth(),
+        ) {
+            items(
+                count = state.downloadedVideos.size,
+                key = {
+                    state.downloadedVideos[it].name
+                }
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(
+                            horizontal = 16.dp,
+                            vertical = 8.dp
+                        ),
+                ) {
+                    Text(
+                        text = state.downloadedVideos[it].name,
+                    )
+                }
+            }
         }
     }
 }

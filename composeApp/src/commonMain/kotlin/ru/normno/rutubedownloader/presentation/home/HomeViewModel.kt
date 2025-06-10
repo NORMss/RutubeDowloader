@@ -1,10 +1,7 @@
 package ru.normno.rutubedownloader.presentation.home
 
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -27,6 +24,12 @@ class HomeViewModel(
     val state: StateFlow<HomeState>
         field = MutableStateFlow(HomeState())
 
+    init {
+        viewModelScope.launch(Dispatchers.IO) {
+            getAllVideos()
+        }
+    }
+
     fun setVideoUrl(string: String) {
         state.update {
             it.copy(
@@ -46,7 +49,7 @@ class HomeViewModel(
     fun onDownloadVideo() {
         state.value.selectedVideoQuality?.let { videoQuality ->
             viewModelScope.launch(Dispatchers.Default) {
-                downloaderRepository.downloadHlsStream(
+                val result = downloaderRepository.downloadHlsStream(
                     url = videoQuality.url,
                     name = sanitizeFileName(
                         state.value.videoUrlM3U8?.title
@@ -60,6 +63,15 @@ class HomeViewModel(
                         }
                     }
                 )
+                when (result) {
+                    is Result.Error -> {
+
+                    }
+
+                    is Result.Success -> {
+                        getAllVideos()
+                    }
+                }
             }
         }
     }
@@ -109,6 +121,16 @@ class HomeViewModel(
                         }
                     }
                 }
+            }
+        }
+    }
+
+    private suspend fun getAllVideos() {
+        fileRepository.getAllDataVideos().also { files ->
+            state.update {
+                it.copy(
+                    downloadedVideos = files,
+                )
             }
         }
     }
