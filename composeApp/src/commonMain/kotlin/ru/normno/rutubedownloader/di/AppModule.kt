@@ -2,8 +2,9 @@ package ru.normno.rutubedownloader.di
 
 import io.github.vinceglb.filekit.FileKit
 import io.ktor.client.HttpClient
-import org.koin.core.context.GlobalContext.startKoin
+import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModel
+import org.koin.dsl.KoinConfiguration
 import org.koin.dsl.module
 import ru.normno.rutubedownloader.data.remote.KtorApiClient
 import ru.normno.rutubedownloader.data.remote.api.RuTubeVideo
@@ -15,9 +16,12 @@ import ru.normno.rutubedownloader.domain.repository.DownloaderRepository
 import ru.normno.rutubedownloader.domain.repository.FileRepository
 import ru.normno.rutubedownloader.presentation.home.HomeViewModel
 
+expect val videoManagerModule: Module
+
 object AppModule {
-    fun initializeKoin() {
-        startKoin {
+
+    fun createKoinConfiguration(): KoinConfiguration {
+        return KoinConfiguration {
             modules(
                 networkModule,
                 localModule,
@@ -26,6 +30,7 @@ object AppModule {
                 downloaderRepository,
                 fileRepository,
                 homeViewModel,
+                videoManagerModule,
             )
         }
     }

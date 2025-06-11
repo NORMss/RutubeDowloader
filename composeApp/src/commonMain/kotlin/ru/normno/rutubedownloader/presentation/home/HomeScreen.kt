@@ -40,6 +40,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import io.github.vinceglb.filekit.name
+import io.github.vinceglb.filekit.path
 import ru.normno.rutubedownloader.util.dowload.Progress.formatSpeed
 import ru.normno.rutubedownloader.util.video.ParseM3U8Playlist.VideoQuality
 import kotlin.time.Clock
@@ -52,6 +53,7 @@ fun HomeScreen(
     onSelectedVideoQuality: (VideoQuality) -> Unit,
     onDownloadVideo: () -> Unit,
     onGetVideo: () -> Unit,
+    onOpenVideo: (uri: String) -> Unit,
 ) {
     var isSelectedResolution by remember {
         mutableStateOf(false)
@@ -186,6 +188,9 @@ fun HomeScreen(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
+                        .clickable {
+                            onOpenVideo(state.downloadedVideos[it].path)
+                        }
                         .padding(
                             horizontal = 16.dp,
                             vertical = 8.dp
