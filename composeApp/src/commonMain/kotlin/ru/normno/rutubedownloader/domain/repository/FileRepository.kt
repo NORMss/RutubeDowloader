@@ -9,4 +9,6 @@ interface FileRepository {
     )
 
     suspend fun getAllDataVideos(): List<PlatformFile>
+
+    suspend fun shareVideo(file: PlatformFile)
 }

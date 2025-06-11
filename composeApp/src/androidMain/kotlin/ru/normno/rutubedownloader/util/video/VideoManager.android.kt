@@ -16,7 +16,7 @@ actual class VideoManager(
 
             val uri: Uri = FileProvider.getUriForFile(
                 context,
-                "ru.normno.rutubedownloader.provider",
+                "ru.normno.rutubedownloader.fileprovider",
                 file
             )
 

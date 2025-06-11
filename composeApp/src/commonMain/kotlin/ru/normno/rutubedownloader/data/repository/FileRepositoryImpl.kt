@@ -7,6 +7,7 @@ import io.github.vinceglb.filekit.filesDir
 import io.github.vinceglb.filekit.list
 import io.github.vinceglb.filekit.write
 import ru.normno.rutubedownloader.domain.repository.FileRepository
+import ru.normno.rutubedownloader.util.file.shareFile
 
 class FileRepositoryImpl(
     private val fileKit: FileKit,
@@ -25,5 +26,9 @@ class FileRepositoryImpl(
 
     override suspend fun getAllDataVideos(): List<PlatformFile> {
         return FileKit.filesDir.list()
+    }
+
+    override suspend fun shareVideo(file: PlatformFile) {
+        shareFile(fileKit, file)
     }
 }

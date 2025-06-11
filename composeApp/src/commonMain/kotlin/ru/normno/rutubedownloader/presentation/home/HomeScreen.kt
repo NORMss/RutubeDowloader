@@ -39,8 +39,10 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import io.github.vinceglb.filekit.PlatformFile
 import io.github.vinceglb.filekit.name
 import io.github.vinceglb.filekit.path
+import ru.normno.rutubedownloader.presentation.component.VideoCard
 import ru.normno.rutubedownloader.util.dowload.Progress.formatSpeed
 import ru.normno.rutubedownloader.util.video.ParseM3U8Playlist.VideoQuality
 import kotlin.time.Clock
@@ -53,7 +55,8 @@ fun HomeScreen(
     onSelectedVideoQuality: (VideoQuality) -> Unit,
     onDownloadVideo: () -> Unit,
     onGetVideo: () -> Unit,
-    onOpenVideo: (uri: String) -> Unit,
+    onOpenVideo: (path: String) -> Unit,
+    onShareVideo: (PlatformFile) -> Unit,
 ) {
     var isSelectedResolution by remember {
         mutableStateOf(false)
@@ -178,6 +181,7 @@ fun HomeScreen(
         LazyColumn(
             modifier = Modifier
                 .fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             items(
                 count = state.downloadedVideos.size,
@@ -185,21 +189,19 @@ fun HomeScreen(
                     state.downloadedVideos[it].name
                 }
             ) {
-                Row(
+                VideoCard(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clickable {
-                            onOpenVideo(state.downloadedVideos[it].path)
-                        }
-                        .padding(
-                            horizontal = 16.dp,
-                            vertical = 8.dp
-                        ),
-                ) {
-                    Text(
-                        text = state.downloadedVideos[it].name,
-                    )
-                }
+                        .padding(horizontal = 8.dp),
+                    name = state.downloadedVideos[it].name,
+                    photo = "",
+                    onOpenVideo = {
+                        onOpenVideo(state.downloadedVideos[it].path)
+                    },
+                    onShare = {
+                        onShareVideo(state.downloadedVideos[it])
+                    }
+                )
             }
         }
     }

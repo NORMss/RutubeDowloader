@@ -10,7 +10,6 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.KoinMultiplatformApplication
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
-import org.koin.core.KoinApplication
 import org.koin.core.annotation.KoinExperimentalAPI
 import ru.normno.rutubedownloader.di.AppModule.createKoinConfiguration
 import ru.normno.rutubedownloader.presentation.home.HomeScreen
@@ -38,7 +37,8 @@ fun App() {
                     videoManager.openVideo(
                         path = path,
                     )
-                }
+                },
+                onShareVideo = viewModel::onShareVideo,
             )
         }
     }

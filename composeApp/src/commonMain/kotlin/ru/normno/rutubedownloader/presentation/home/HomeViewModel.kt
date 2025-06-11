@@ -2,6 +2,7 @@ package ru.normno.rutubedownloader.presentation.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import io.github.vinceglb.filekit.PlatformFile
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -27,6 +28,12 @@ class HomeViewModel(
     init {
         viewModelScope.launch(Dispatchers.IO) {
             getAllVideos()
+        }
+    }
+
+    fun onShareVideo(file: PlatformFile) {
+        viewModelScope.launch(Dispatchers.IO) {
+            fileRepository.shareVideo(file)
         }
     }
 
