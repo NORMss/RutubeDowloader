@@ -31,6 +31,13 @@ class HomeViewModel(
         }
     }
 
+    fun onDeleteFile(file: PlatformFile) {
+        viewModelScope.launch(Dispatchers.IO) {
+            fileRepository.deleteFile(file)
+            getAllVideos()
+        }
+    }
+
     fun onShareVideo(file: PlatformFile) {
         viewModelScope.launch(Dispatchers.IO) {
             fileRepository.shareVideo(file)

@@ -39,6 +39,7 @@ fun App() {
                     )
                 },
                 onShareVideo = viewModel::onShareVideo,
+                onDeleteVideo = viewModel::onDeleteFile,
             )
         }
     }

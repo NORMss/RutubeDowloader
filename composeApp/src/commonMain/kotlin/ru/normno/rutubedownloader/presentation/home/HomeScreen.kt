@@ -17,12 +17,17 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -57,7 +62,14 @@ fun HomeScreen(
     onGetVideo: () -> Unit,
     onOpenVideo: (path: String) -> Unit,
     onShareVideo: (PlatformFile) -> Unit,
+    onDeleteVideo: (PlatformFile) -> Unit,
 ) {
+    var isShowDeleteVideoDialog by remember {
+        mutableStateOf(false)
+    }
+    var deleteVideoFile by remember {
+        mutableStateOf<PlatformFile?>(null)
+    }
     var isSelectedResolution by remember {
         mutableStateOf(false)
     }
@@ -70,6 +82,60 @@ fun HomeScreen(
     LaunchedEffect(state.downloadProgress.totalDownloadedBytes) {
         elapsedTimeSec = (Clock.System.now().toEpochMilliseconds() - startTime) / 1000f
     }
+
+    if(isShowDeleteVideoDialog){
+        AlertDialog(
+            icon = {
+                Icon(
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = null,
+                )
+            },
+            title = {
+                Text(
+                    text = "Delete video",
+                )
+            },
+            text = {
+                Text(
+                    text = "Are you sure you want to delete this video?",
+                )
+            },
+            onDismissRequest = {
+                isShowDeleteVideoDialog = false
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        deleteVideoFile?.let {
+                            onDeleteVideo(it)
+                        }
+                        isShowDeleteVideoDialog = false
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.error,
+                        contentColor = MaterialTheme.colorScheme.onError,
+                    )
+                ) {
+                    Text(
+                        text = "Delete",
+                    )
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        isShowDeleteVideoDialog = false
+                    },
+                ) {
+                    Text(
+                        text = "Cancel",
+                    )
+                }
+            }
+        )
+    }
+
 
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -200,7 +266,11 @@ fun HomeScreen(
                     },
                     onShare = {
                         onShareVideo(state.downloadedVideos[it])
-                    }
+                    },
+                    onDeleteVideo = {
+                        deleteVideoFile = state.downloadedVideos[it]
+                        isShowDeleteVideoDialog = true
+                    },
                 )
             }
         }

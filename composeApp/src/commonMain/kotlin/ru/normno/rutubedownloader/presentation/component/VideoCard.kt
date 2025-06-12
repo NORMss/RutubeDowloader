@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
@@ -29,6 +30,7 @@ fun VideoCard(
     photo: String,
     onOpenVideo: () -> Unit,
     onShare: () -> Unit,
+    onDeleteVideo: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Card(
@@ -76,6 +78,18 @@ fun VideoCard(
                     contentDescription = null,
                 )
             }
+            Spacer(
+                modifier = Modifier
+                    .width(8.dp),
+            )
+            IconButton(
+                onClick = onDeleteVideo,
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = null,
+                )
+            }
         }
     }
 }
@@ -88,5 +102,6 @@ fun VideoCardPreview() {
         photo = "https://example.com/sample_photo.jpg",
         onOpenVideo = {},
         onShare = {},
+        onDeleteVideo = {},
     )
 }

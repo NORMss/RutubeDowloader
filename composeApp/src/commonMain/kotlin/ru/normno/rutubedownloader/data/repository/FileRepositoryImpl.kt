@@ -2,6 +2,7 @@ package ru.normno.rutubedownloader.data.repository
 
 import io.github.vinceglb.filekit.FileKit
 import io.github.vinceglb.filekit.PlatformFile
+import io.github.vinceglb.filekit.delete
 import io.github.vinceglb.filekit.dialogs.openFileSaver
 import io.github.vinceglb.filekit.filesDir
 import io.github.vinceglb.filekit.list
@@ -30,5 +31,9 @@ class FileRepositoryImpl(
 
     override suspend fun shareVideo(file: PlatformFile) {
         shareFile(fileKit, file)
+    }
+
+    override suspend fun deleteFile(file: PlatformFile) {
+        file.delete()
     }
 }
