@@ -8,13 +8,13 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Delete
@@ -63,6 +63,7 @@ fun HomeScreen(
     onOpenVideo: (path: String) -> Unit,
     onShareVideo: (PlatformFile) -> Unit,
     onDeleteVideo: (PlatformFile) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     var isShowDeleteVideoDialog by remember {
         mutableStateOf(false)
@@ -79,11 +80,15 @@ fun HomeScreen(
     var elapsedTimeSec by remember {
         mutableFloatStateOf(0f)
     }
-    LaunchedEffect(state.downloadProgress.totalDownloadedBytes) {
-        elapsedTimeSec = (Clock.System.now().toEpochMilliseconds() - startTime) / 1000f
+    LaunchedEffect(state.isDownload) {
+        elapsedTimeSec = if (state.isDownload) {
+            (Clock.System.now().toEpochMilliseconds() - startTime) / 1000f
+        } else {
+            0f
+        }
     }
 
-    if(isShowDeleteVideoDialog){
+    if (isShowDeleteVideoDialog) {
         AlertDialog(
             icon = {
                 Icon(
@@ -138,32 +143,52 @@ fun HomeScreen(
 
 
     Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
+        modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center,
+            modifier = Modifier.fillMaxWidth()
+                .padding(
+                    top = 32.dp,
+                )
+                .padding(
+                    horizontal = 8.dp,
+                ),
         ) {
             TextField(
                 value = state.videoUrlWithId,
                 onValueChange = setVideoUrl,
+                singleLine = true,
+                modifier = Modifier
+                    .weight(1f),
                 label = {
                     Text(
                         text = "Video URL",
                     )
-                }
+                },
+                keyboardActions = KeyboardActions(
+                    onSearch = {
+                        onGetVideo()
+                    }
+                )
             )
-        }
-        Button(
-            onClick = onGetVideo,
-            enabled = state.videoUrlWithId.isNotBlank(),
-        ) {
-            Text(
-                text = "Get Video"
+            Spacer(
+                modifier = Modifier
+                    .width(4.dp)
             )
+            Button(
+                onClick = onGetVideo,
+                enabled = state.videoUrlWithId.isNotBlank(),
+            ) {
+                Text(
+                    text = "Get Video"
+                )
+            }
         }
+        Spacer(
+            modifier = Modifier
+                .height(8.dp)
+        )
         AsyncImage(
             model = state.videoUrlM3U8?.previewUrl,
             contentDescription = null,
@@ -173,82 +198,109 @@ fun HomeScreen(
             onSuccess = { println("Success: ${state.videoUrlM3U8?.previewUrl}") },
             onError = { println("Error: ${it.result.throwable.message}") },
         )
+        Spacer(
+            modifier = Modifier
+                .height(8.dp)
+        )
         Text(
             text = state.videoUrlM3U8?.title ?: "",
+            style = MaterialTheme.typography.titleLarge,
+            modifier = Modifier
+                .padding(horizontal = 8.dp),
         )
         if (state.videoQualities.isNotEmpty()) {
-            Box(
+            Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 8.dp),
             ) {
-                Row(
+                Box(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable {
-                            isSelectedResolution = true
-                        },
-                    verticalAlignment = Alignment.CenterVertically,
+                        .weight(1f)
+                        .padding(horizontal = 8.dp),
                 ) {
-                    Text(
-                        text = state.selectedVideoQuality?.resolution ?: "",
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                    )
-                    Spacer(
+                    Row(
                         modifier = Modifier
-                            .width(4.dp),
-                    )
-                    Icon(
-                        imageVector = Icons.Default.ArrowDropDown,
-                        contentDescription = null,
-                        modifier = Modifier
-                            .rotate(if (isSelectedResolution) 180f else 0f),
-                    )
-                }
-                Spacer(
-                    modifier = Modifier
-                        .height(8.dp)
-                )
-                DropdownMenu(
-                    expanded = isSelectedResolution,
-                    onDismissRequest = { isSelectedResolution = false },
-                ) {
-                    state.videoQualities.forEach { video ->
-                        DropdownMenuItem(
-                            onClick = {
-                                isSelectedResolution = false
-                                onSelectedVideoQuality(video)
+                            .fillMaxWidth()
+                            .clickable {
+                                isSelectedResolution = true
                             },
-                            text = {
-                                Text(text = "${video.resolution} ${video.codecs}")
-                            }
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Text(
+                            text = state.selectedVideoQuality?.resolution ?: "",
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            style = MaterialTheme.typography.titleMedium,
+                        )
+                        Spacer(
+                            modifier = Modifier
+                                .width(4.dp),
+                        )
+                        Icon(
+                            imageVector = Icons.Default.ArrowDropDown,
+                            contentDescription = null,
+                            modifier = Modifier
+                                .rotate(if (isSelectedResolution) 180f else 0f),
+                        )
+                    }
+                    DropdownMenu(
+                        expanded = isSelectedResolution,
+                        onDismissRequest = { isSelectedResolution = false },
+                    ) {
+                        state.videoQualities.forEach { video ->
+                            DropdownMenuItem(
+                                onClick = {
+                                    isSelectedResolution = false
+                                    onSelectedVideoQuality(video)
+                                },
+                                text = {
+                                    Text(text = "${video.resolution} ${video.codecs}")
+                                }
+                            )
+                        }
+                    }
+                }
+                if (state.isDownload) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                    ) {
+                        CircularProgressIndicator(
+                            progress = { state.downloadProgress.progress },
+                        )
+                        Text(
+                            text = formatSpeed(state.downloadProgress.totalDownloadedBytes / elapsedTimeSec)
+                        )
+                    }
+                } else {
+                    Button(
+                        onClick = {
+                            onDownloadVideo()
+                            startTime = Clock.System.now().toEpochMilliseconds()
+                        },
+                    ) {
+                        Text(
+                            text = "Download"
                         )
                     }
                 }
             }
-            Button(
-                onClick = {
-                    onDownloadVideo()
-                    startTime = Clock.System.now().toEpochMilliseconds()
-                },
-            ) {
-                Text(
-                    text = "Download"
-                )
-            }
-            CircularProgressIndicator(
-                progress = { state.downloadProgress.progress },
-            )
-            Text(
-                text = formatSpeed(state.downloadProgress.totalDownloadedBytes / elapsedTimeSec)
-            )
         }
         LazyColumn(
             modifier = Modifier
                 .fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
+            if (state.downloadedVideos.isEmpty()) {
+                item {
+                    Text(
+                        text = "No videos downloaded",
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 8.dp),
+                        textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                    )
+                }
+            }
             items(
                 count = state.downloadedVideos.size,
                 key = {
@@ -260,7 +312,6 @@ fun HomeScreen(
                         .fillMaxWidth()
                         .padding(horizontal = 8.dp),
                     name = state.downloadedVideos[it].name,
-                    photo = "",
                     onOpenVideo = {
                         onOpenVideo(state.downloadedVideos[it].path)
                     },

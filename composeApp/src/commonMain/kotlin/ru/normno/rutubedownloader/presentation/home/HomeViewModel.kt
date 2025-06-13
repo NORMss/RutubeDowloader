@@ -61,6 +61,11 @@ class HomeViewModel(
     }
 
     fun onDownloadVideo() {
+        state.update {
+            it.copy(
+                isDownload = true,
+            )
+        }
         state.value.selectedVideoQuality?.let { videoQuality ->
             viewModelScope.launch(Dispatchers.Default) {
                 val result = downloaderRepository.downloadHlsStream(
@@ -79,11 +84,20 @@ class HomeViewModel(
                 )
                 when (result) {
                     is Result.Error -> {
-
+                        state.update {
+                            it.copy(
+                                isDownload = false,
+                            )
+                        }
                     }
 
                     is Result.Success -> {
                         getAllVideos()
+                        state.update {
+                            it.copy(
+                                isDownload = false,
+                            )
+                        }
                     }
                 }
             }

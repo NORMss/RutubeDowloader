@@ -27,7 +27,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Composable
 fun VideoCard(
     name: String,
-    photo: String,
+    photo: String? = null,
     onOpenVideo: () -> Unit,
     onShare: () -> Unit,
     onDeleteVideo: () -> Unit,
@@ -46,18 +46,20 @@ fun VideoCard(
                 ),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            AsyncImage(
-                model = photo,
-                contentDescription = null,
-                modifier = Modifier
-                    .clip(RoundedCornerShape(8.dp))
-                    .size(64.dp),
-                placeholder = ColorPainter(MaterialTheme.colorScheme.surfaceVariant),
-            )
-            Spacer(
-                modifier = Modifier
-                    .width(8.dp),
-            )
+            if (photo != null) {
+                AsyncImage(
+                    model = photo,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(8.dp))
+                        .size(64.dp),
+                    placeholder = ColorPainter(MaterialTheme.colorScheme.surfaceVariant),
+                )
+                Spacer(
+                    modifier = Modifier
+                        .width(8.dp),
+                )
+            }
             Text(
                 modifier = Modifier
                     .weight(1f),

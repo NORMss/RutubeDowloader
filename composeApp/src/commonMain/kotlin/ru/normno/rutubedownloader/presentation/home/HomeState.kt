@@ -12,4 +12,5 @@ data class HomeState(
     val downloadProgress: Progress.DownloadProgress = Progress.DownloadProgress(0f, 0L),
     val selectedVideoQuality: VideoQuality? = null,
     val downloadedVideos: List<PlatformFile> = emptyList(),
+    val isDownload: Boolean = false,
 )
