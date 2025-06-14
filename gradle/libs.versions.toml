@@ -22,8 +22,12 @@ filekit = "0.10.0-beta04"
 materialIconsExtended = "1.7.3"
 icerick-permissions = "0.19.1"
 accompanist = "0.37.3"
+remember-setting = "1.0.3"
 
 [libraries]
+#multi languages
+remember-setting = { module = "dev.burnoo:compose-remember-setting", version.ref = "remember-setting" }
+
 #permissions
 icerock-permissions = { module = "dev.icerock.moko:permissions", version.ref = "icerick-permissions" }
 icerock-permissions-compose = { module = "dev.icerock.moko:permissions-compose", version.ref = "icerick-permissions" }

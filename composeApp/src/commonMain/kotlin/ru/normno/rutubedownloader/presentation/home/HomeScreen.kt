@@ -18,6 +18,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Download
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -35,6 +36,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -47,6 +49,7 @@ import coil3.compose.AsyncImage
 import io.github.vinceglb.filekit.PlatformFile
 import io.github.vinceglb.filekit.name
 import io.github.vinceglb.filekit.path
+import kotlinx.coroutines.delay
 import ru.normno.rutubedownloader.presentation.component.VideoCard
 import ru.normno.rutubedownloader.util.dowload.Progress.formatSpeed
 import ru.normno.rutubedownloader.util.video.ParseM3U8Playlist.VideoQuality
@@ -212,6 +215,10 @@ fun HomeScreen(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .padding(
+                        horizontal = 8.dp
+                    ),
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Box(
                     modifier = Modifier
@@ -268,7 +275,11 @@ fun HomeScreen(
                             progress = { state.downloadProgress.progress },
                         )
                         Text(
-                            text = formatSpeed(state.downloadProgress.totalDownloadedBytes / elapsedTimeSec)
+                            text = if (elapsedTimeSec > 0) {
+                                formatSpeed(state.downloadProgress.totalDownloadedBytes / elapsedTimeSec)
+                            } else {
+                                "Calculating..."
+                            }
                         )
                     }
                 } else {
@@ -276,10 +287,11 @@ fun HomeScreen(
                         onClick = {
                             onDownloadVideo()
                             startTime = Clock.System.now().toEpochMilliseconds()
-                        },
+                        }
                     ) {
-                        Text(
-                            text = "Download"
+                        Icon(
+                            imageVector = Icons.Default.Download,
+                            contentDescription = null,
                         )
                     }
                 }

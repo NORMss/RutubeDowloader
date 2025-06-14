@@ -35,6 +35,9 @@ kotlin {
             implementation(libs.accompanist.permissions)
         }
         commonMain.dependencies {
+            //multi languages
+            implementation(libs.remember.setting)
+
             //icons
             implementation(libs.material.icons.extended)
 
