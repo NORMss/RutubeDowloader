@@ -26,7 +26,7 @@ remember-setting = "1.0.3"
 
 [libraries]
 #multi languages
-remember-setting = { module = "dev.burnoo:compose-remember-setting", version.ref = "remember-setting" }
+compose-remember-setting = { module = "dev.burnoo:compose-remember-setting", version.ref = "remember-setting" }
 
 #permissions
 icerock-permissions = { module = "dev.icerock.moko:permissions", version.ref = "icerick-permissions" }

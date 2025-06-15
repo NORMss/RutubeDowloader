@@ -18,6 +18,8 @@ import ru.normno.rutubedownloader.presentation.home.HomeViewModel
 
 expect val videoManagerModule: Module
 
+expect val localModule: Module
+
 object AppModule {
 
     fun createKoinConfiguration(): KoinConfiguration {

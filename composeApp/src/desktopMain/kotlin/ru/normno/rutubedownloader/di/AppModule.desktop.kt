@@ -7,3 +7,6 @@ import ru.normno.rutubedownloader.util.video.VideoManager
 actual val videoManagerModule: Module = module {
     single<VideoManager> { VideoManager() }
 }
+
+actual val localModule: Module
+    get() = TODO("Not yet implemented")

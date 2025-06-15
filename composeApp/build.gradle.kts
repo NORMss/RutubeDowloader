@@ -36,7 +36,7 @@ kotlin {
         }
         commonMain.dependencies {
             //multi languages
-            implementation(libs.remember.setting)
+            implementation(libs.compose.remember.setting)
 
             //icons
             implementation(libs.material.icons.extended)
