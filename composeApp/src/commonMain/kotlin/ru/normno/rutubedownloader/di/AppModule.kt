@@ -18,7 +18,7 @@ import ru.normno.rutubedownloader.presentation.home.HomeViewModel
 
 expect val videoManagerModule: Module
 
-expect val localModule: Module
+expect val localizationModule: Module
 
 object AppModule {
 
@@ -32,6 +32,7 @@ object AppModule {
                 downloaderRepository,
                 fileRepository,
                 homeViewModel,
+                localizationModule,
                 videoManagerModule,
             )
         }

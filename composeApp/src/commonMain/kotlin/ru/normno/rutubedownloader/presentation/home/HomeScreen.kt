@@ -50,9 +50,14 @@ import io.github.vinceglb.filekit.PlatformFile
 import io.github.vinceglb.filekit.name
 import io.github.vinceglb.filekit.path
 import kotlinx.coroutines.delay
+import org.jetbrains.compose.resources.StringResource
+import org.jetbrains.compose.resources.stringResource
+import ru.normno.rutubedownloader.domain.Language
 import ru.normno.rutubedownloader.presentation.component.VideoCard
 import ru.normno.rutubedownloader.util.dowload.Progress.formatSpeed
 import ru.normno.rutubedownloader.util.video.ParseM3U8Playlist.VideoQuality
+import rutubedownloader.composeapp.generated.resources.Res
+import rutubedownloader.composeapp.generated.resources.delete_video
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
@@ -101,7 +106,7 @@ fun HomeScreen(
             },
             title = {
                 Text(
-                    text = "Delete video",
+                    text = stringResource(Res.string.delete_video),
                 )
             },
             text = {

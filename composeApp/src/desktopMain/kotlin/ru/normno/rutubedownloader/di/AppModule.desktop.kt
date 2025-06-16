@@ -8,5 +8,5 @@ actual val videoManagerModule: Module = module {
     single<VideoManager> { VideoManager() }
 }
 
-actual val localModule: Module
+actual val localizationModule: Module
     get() = TODO("Not yet implemented")

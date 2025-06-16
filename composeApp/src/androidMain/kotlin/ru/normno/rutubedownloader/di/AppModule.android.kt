@@ -10,6 +10,6 @@ actual val videoManagerModule: Module = module {
     single<VideoManager> { VideoManager(context = androidContext()) }
 }
 
-actual val localModule: Module = module {
+actual val localizationModule: Module = module {
     single<Localization> { Localization(context = androidContext()) }
 }
