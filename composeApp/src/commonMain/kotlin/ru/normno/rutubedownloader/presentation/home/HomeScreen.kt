@@ -57,7 +57,13 @@ import ru.normno.rutubedownloader.presentation.component.VideoCard
 import ru.normno.rutubedownloader.util.dowload.Progress.formatSpeed
 import ru.normno.rutubedownloader.util.video.ParseM3U8Playlist.VideoQuality
 import rutubedownloader.composeapp.generated.resources.Res
+import rutubedownloader.composeapp.generated.resources.cancel
+import rutubedownloader.composeapp.generated.resources.delete
 import rutubedownloader.composeapp.generated.resources.delete_video
+import rutubedownloader.composeapp.generated.resources.get_video
+import rutubedownloader.composeapp.generated.resources.no_videos_downloaded
+import rutubedownloader.composeapp.generated.resources.sure_to_delete
+import rutubedownloader.composeapp.generated.resources.url_to_video
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
@@ -111,7 +117,7 @@ fun HomeScreen(
             },
             text = {
                 Text(
-                    text = "Are you sure you want to delete this video?",
+                    text = stringResource(Res.string.sure_to_delete),
                 )
             },
             onDismissRequest = {
@@ -131,7 +137,7 @@ fun HomeScreen(
                     )
                 ) {
                     Text(
-                        text = "Delete",
+                        text = stringResource(Res.string.delete),
                     )
                 }
             },
@@ -142,13 +148,12 @@ fun HomeScreen(
                     },
                 ) {
                     Text(
-                        text = "Cancel",
+                        text = stringResource(Res.string.cancel),
                     )
                 }
             }
         )
     }
-
 
     Column(
         modifier = modifier,
@@ -171,7 +176,7 @@ fun HomeScreen(
                     .weight(1f),
                 label = {
                     Text(
-                        text = "Video URL",
+                        text = stringResource(Res.string.url_to_video)
                     )
                 },
                 keyboardActions = KeyboardActions(
@@ -189,7 +194,7 @@ fun HomeScreen(
                 enabled = state.videoUrlWithId.isNotBlank(),
             ) {
                 Text(
-                    text = "Get Video"
+                    text = stringResource(Res.string.get_video)
                 )
             }
         }
@@ -310,7 +315,7 @@ fun HomeScreen(
             if (state.downloadedVideos.isEmpty()) {
                 item {
                     Text(
-                        text = "No videos downloaded",
+                        text = stringResource(Res.string.no_videos_downloaded),
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = 8.dp),
