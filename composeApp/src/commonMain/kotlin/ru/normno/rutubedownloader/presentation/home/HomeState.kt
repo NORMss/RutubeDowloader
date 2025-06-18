@@ -9,7 +9,7 @@ data class HomeState(
     val videoUrlWithId: String = "",
     val videoUrlM3U8: Video? = null,
     val videoQualities: List<VideoQuality> = emptyList(),
-    val downloadProgress: Progress.DownloadProgress = Progress.DownloadProgress(0f, 0L),
+    val downloadProgress: Progress.DownloadProgress = Progress.DownloadProgress(),
     val selectedVideoQuality: VideoQuality? = null,
     val downloadedVideos: List<PlatformFile> = emptyList(),
     val isDownload: Boolean = false,

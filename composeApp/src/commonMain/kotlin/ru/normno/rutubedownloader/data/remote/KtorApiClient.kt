@@ -127,17 +127,24 @@ class KtorApiClient(
                     val segmentUrl = if (relativePath.startsWith("http"))
                         relativePath else baseUrl + relativePath
 
+                    val segmentStartTime = System.currentTimeMillis()
+
                     when (val result = downloadFile(segmentUrl)) {
                         is Result.Success -> {
                             result.data?.let { data ->
                                 sink.write(data)
                                 totalDownloadedBytes += data.size.toLong()
 
+                                val segmentEndTime = System.currentTimeMillis()
+                                val durationMillis = (segmentEndTime - segmentStartTime).coerceAtLeast(1) // чтобы не было деления на 0
+                                val bytesPerSecond = (data.size.toFloat() / durationMillis) * 1000f
+
                                 val progress = (index + 1).toFloat() / totalSegments
                                 onProgress(
                                     Progress.DownloadProgress(
                                         progress = progress,
-                                        totalDownloadedBytes = totalDownloadedBytes
+                                        totalDownloadedBytes = totalDownloadedBytes,
+                                        currentSpeed = bytesPerSecond
                                     )
                                 )
                             }

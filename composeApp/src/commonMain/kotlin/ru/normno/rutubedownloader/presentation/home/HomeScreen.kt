@@ -31,12 +31,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -49,10 +45,7 @@ import coil3.compose.AsyncImage
 import io.github.vinceglb.filekit.PlatformFile
 import io.github.vinceglb.filekit.name
 import io.github.vinceglb.filekit.path
-import kotlinx.coroutines.delay
-import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
-import ru.normno.rutubedownloader.domain.Language
 import ru.normno.rutubedownloader.presentation.component.VideoCard
 import ru.normno.rutubedownloader.util.dowload.Progress.formatSpeed
 import ru.normno.rutubedownloader.util.video.ParseM3U8Playlist.VideoQuality
@@ -64,7 +57,6 @@ import rutubedownloader.composeapp.generated.resources.get_video
 import rutubedownloader.composeapp.generated.resources.no_videos_downloaded
 import rutubedownloader.composeapp.generated.resources.sure_to_delete
 import rutubedownloader.composeapp.generated.resources.url_to_video
-import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
 @Composable
@@ -87,19 +79,6 @@ fun HomeScreen(
     }
     var isSelectedResolution by remember {
         mutableStateOf(false)
-    }
-    var startTime by remember {
-        mutableLongStateOf(0L)
-    }
-    var elapsedTimeSec by remember {
-        mutableFloatStateOf(0f)
-    }
-    LaunchedEffect(state.isDownload) {
-        elapsedTimeSec = if (state.isDownload) {
-            (Clock.System.now().toEpochMilliseconds() - startTime) / 1000f
-        } else {
-            0f
-        }
     }
 
     if (isShowDeleteVideoDialog) {
@@ -285,18 +264,13 @@ fun HomeScreen(
                             progress = { state.downloadProgress.progress },
                         )
                         Text(
-                            text = if (elapsedTimeSec > 0) {
-                                formatSpeed(state.downloadProgress.totalDownloadedBytes / elapsedTimeSec)
-                            } else {
-                                "Calculating..."
-                            }
+                            text = formatSpeed(state.downloadProgress.currentSpeed)
                         )
                     }
                 } else {
                     Button(
                         onClick = {
                             onDownloadVideo()
-                            startTime = Clock.System.now().toEpochMilliseconds()
                         }
                     ) {
                         Icon(

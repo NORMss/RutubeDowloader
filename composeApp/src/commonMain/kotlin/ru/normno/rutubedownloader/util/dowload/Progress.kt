@@ -4,6 +4,7 @@ object Progress {
     data class DownloadProgress(
         val progress: Float = 0f,
         val totalDownloadedBytes: Long = 0L,
+        val currentSpeed: Float = 0f,
     )
 
     fun formatSpeed(bytesPerSec: Float): String {
