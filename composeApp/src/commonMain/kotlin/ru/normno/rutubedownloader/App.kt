@@ -14,11 +14,16 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import dev.burnoo.compose.remembersetting.rememberStringSetting
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -53,11 +58,16 @@ fun App() {
                 defaultValue = Language.English.iso,
             )
 
-            val selectedLanguage by derivedStateOf {
-                Language.entries.first() { it.iso == languageIso }
+            val selectedLanguage by remember {
+                derivedStateOf {
+                    Language.entries.first { it.iso == languageIso }
+                }
             }
 
-            localization.applyLanguage(languageIso)
+            LaunchedEffect(selectedLanguage, Unit) {
+                localization.applyLanguage(languageIso)
+                println("localization.applyLanguage")
+            }
 
             Scaffold(
                 modifier = Modifier
@@ -75,7 +85,6 @@ fun App() {
                                     languageIso =
                                         if (selectedLanguage == Language.Russian) Language.English.iso
                                         else Language.Russian.iso
-                                    localization.applyLanguage(languageIso)
                                 }
                             ) {
                                 Icon(

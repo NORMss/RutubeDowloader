@@ -19,11 +19,15 @@ kotlin {
     androidTarget {
         @OptIn(ExperimentalKotlinGradlePluginApi::class)
         compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_11)
+            jvmTarget.set(JvmTarget.JVM_21)
         }
     }
     
-    jvm("desktop")
+    jvm("desktop"){
+        compilerOptions{
+            jvmTarget.set(JvmTarget.JVM_21)
+        }
+    }
     
     sourceSets {
         val desktopMain by getting
@@ -33,8 +37,18 @@ kotlin {
             implementation(libs.androidx.activity.compose)
             implementation(libs.ktor.client.okhttp)
             implementation(libs.accompanist.permissions)
+            //di
+            implementation(libs.koin.android)
         }
         commonMain.dependencies {
+            //adaptive navigation
+            implementation(libs.navigation.compose)
+            implementation(libs.navigation.common)
+            implementation(compose.material3AdaptiveNavigationSuite)
+            implementation(libs.material3.adaptive)
+            implementation(libs.material3.adaptive.layout)
+            implementation(libs.material3.adaptive.navigation)
+
             //multi languages
             implementation(libs.compose.remember.setting)
 
@@ -47,7 +61,7 @@ kotlin {
             implementation(libs.filekit.dialogs.compose)
 
             //di
-            implementation(libs.bundles.koin)
+            implementation(libs.bundles.koin.common)
 
             //image
             implementation(libs.coil.compose)
@@ -103,8 +117,8 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
     }
 }
 

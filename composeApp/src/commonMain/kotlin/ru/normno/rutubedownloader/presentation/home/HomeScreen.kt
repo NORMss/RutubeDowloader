@@ -46,7 +46,11 @@ import io.github.vinceglb.filekit.PlatformFile
 import io.github.vinceglb.filekit.name
 import io.github.vinceglb.filekit.path
 import org.jetbrains.compose.resources.stringResource
+import ru.normno.rutubedownloader.domain.model.Video
 import ru.normno.rutubedownloader.presentation.component.VideoCard
+import ru.normno.rutubedownloader.presentation.util.WindowType
+import ru.normno.rutubedownloader.presentation.util.rememberWindowSize
+import ru.normno.rutubedownloader.util.dowload.Progress
 import ru.normno.rutubedownloader.util.dowload.Progress.formatSpeed
 import ru.normno.rutubedownloader.util.video.ParseM3U8Playlist.VideoQuality
 import rutubedownloader.composeapp.generated.resources.Res
@@ -71,14 +75,257 @@ fun HomeScreen(
     onDeleteVideo: (PlatformFile) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val windowSize = rememberWindowSize()
+    when (windowSize.with) {
+        WindowType.Compact -> {
+            Column(
+                modifier = modifier,
+            ) {
+                VideoCard(
+                    videoUrlWithId = state.videoUrlWithId,
+                    setVideoUrl = setVideoUrl,
+                    videoUrlM3U8 = state.videoUrlM3U8,
+                    videoQualities = state.videoQualities,
+                    selectedVideoQuality = state.selectedVideoQuality,
+                    isDownload = state.isDownload,
+                    downloadProgress = state.downloadProgress,
+                    onSelectedVideoQuality = onSelectedVideoQuality,
+                    onDownloadVideo = onDownloadVideo,
+                    onGetVideo = onGetVideo,
+                    onOpenVideo = onOpenVideo,
+                    onShare = onShareVideo,
+                    onDeleteVideo = onDeleteVideo,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+                VideosList(
+                    downloadedVideos = state.downloadedVideos,
+                    onOpenVideo = onOpenVideo,
+                    onShareVideo = onShareVideo,
+                    onDeleteVideo = onDeleteVideo,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            }
+        }
+
+        else -> {
+            Row(
+                modifier = modifier,
+            ) {
+                VideoCard(
+                    videoUrlWithId = state.videoUrlWithId,
+                    setVideoUrl = setVideoUrl,
+                    videoUrlM3U8 = state.videoUrlM3U8,
+                    videoQualities = state.videoQualities,
+                    selectedVideoQuality = state.selectedVideoQuality,
+                    isDownload = state.isDownload,
+                    downloadProgress = state.downloadProgress,
+                    onSelectedVideoQuality = onSelectedVideoQuality,
+                    onDownloadVideo = onDownloadVideo,
+                    onGetVideo = onGetVideo,
+                    onOpenVideo = onOpenVideo,
+                    onShare = onShareVideo,
+                    onDeleteVideo = onDeleteVideo,
+                    modifier = Modifier.weight(1f),
+                )
+                Spacer(
+                    modifier = Modifier
+                        .width(8.dp),
+                )
+                VideosList(
+                    downloadedVideos = state.downloadedVideos,
+                    onOpenVideo = onOpenVideo,
+                    onShareVideo = onShareVideo,
+                    onDeleteVideo = onDeleteVideo,
+                    modifier = Modifier.weight(1f),
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun VideoCard(
+    onOpenVideo: (path: String) -> Unit,
+    onShare: (PlatformFile) -> Unit,
+    onDeleteVideo: (PlatformFile) -> Unit,
+    videoUrlWithId: String = "",
+    setVideoUrl: (String) -> Unit = {},
+    onGetVideo: () -> Unit = {},
+    videoUrlM3U8: Video? = null,
+    onSelectedVideoQuality: (VideoQuality) -> Unit = {},
+    onDownloadVideo: () -> Unit = {},
+    videoQualities: List<VideoQuality> = emptyList(),
+    selectedVideoQuality: VideoQuality? = null,
+    isDownload: Boolean = false,
+    downloadProgress: Progress.DownloadProgress,
+    modifier: Modifier = Modifier,
+) {
+    var isSelectedResolution by remember {
+        mutableStateOf(false)
+    }
+
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth()
+                .padding(
+                    vertical = 8.dp,
+                    horizontal = 8.dp,
+                ),
+        ) {
+            TextField(
+                value = videoUrlWithId,
+                onValueChange = setVideoUrl,
+                singleLine = true,
+                modifier = Modifier
+                    .weight(1f),
+                label = {
+                    Text(
+                        text = stringResource(Res.string.url_to_video)
+                    )
+                },
+                keyboardActions = KeyboardActions(
+                    onSearch = {
+                        onGetVideo()
+                    }
+                )
+            )
+            Spacer(
+                modifier = Modifier
+                    .width(4.dp)
+            )
+            Button(
+                onClick = onGetVideo,
+                enabled = videoUrlWithId.isNotBlank(),
+            ) {
+                Text(
+                    text = stringResource(Res.string.get_video)
+                )
+            }
+        }
+        Spacer(
+            modifier = Modifier
+                .height(8.dp)
+        )
+        AsyncImage(
+            model = videoUrlM3U8?.previewUrl,
+            contentDescription = null,
+            modifier = Modifier
+                .clip(RoundedCornerShape(16.dp))
+                .fillMaxWidth(0.9f),
+            onSuccess = { println("Success: ${videoUrlM3U8?.previewUrl}") },
+            onError = { println("Error: ${it.result.throwable.message}") },
+        )
+        Spacer(
+            modifier = Modifier
+                .height(8.dp)
+        )
+        Text(
+            text = videoUrlM3U8?.title ?: "",
+            style = MaterialTheme.typography.titleLarge,
+            modifier = Modifier
+                .padding(horizontal = 8.dp),
+        )
+        if (videoQualities.isNotEmpty()) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(
+                        horizontal = 8.dp
+                    ),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(horizontal = 8.dp),
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable {
+                                isSelectedResolution = true
+                            },
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Text(
+                            text = selectedVideoQuality?.resolution ?: "",
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            style = MaterialTheme.typography.titleMedium,
+                        )
+                        Spacer(
+                            modifier = Modifier
+                                .width(4.dp),
+                        )
+                        Icon(
+                            imageVector = Icons.Default.ArrowDropDown,
+                            contentDescription = null,
+                            modifier = Modifier
+                                .rotate(if (isSelectedResolution) 180f else 0f),
+                        )
+                    }
+                    DropdownMenu(
+                        expanded = isSelectedResolution,
+                        onDismissRequest = { isSelectedResolution = false },
+                    ) {
+                        videoQualities.forEach { video ->
+                            DropdownMenuItem(
+                                onClick = {
+                                    isSelectedResolution = false
+                                    onSelectedVideoQuality(video)
+                                },
+                                text = {
+                                    Text(text = "${video.resolution} ${video.codecs}")
+                                }
+                            )
+                        }
+                    }
+                }
+                if (isDownload) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                    ) {
+                        CircularProgressIndicator(
+                            progress = { downloadProgress.progress },
+                        )
+                        Text(
+                            text = formatSpeed(downloadProgress.currentSpeed)
+                        )
+                    }
+                } else {
+                    Button(
+                        onClick = {
+                            onDownloadVideo()
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Download,
+                            contentDescription = null,
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun VideosList(
+    downloadedVideos: List<PlatformFile>,
+    onOpenVideo: (path: String) -> Unit,
+    onShareVideo: (PlatformFile) -> Unit,
+    onDeleteVideo: (PlatformFile) -> Unit,
+    modifier: Modifier = Modifier,
+) {
     var isShowDeleteVideoDialog by remember {
         mutableStateOf(false)
     }
+
     var deleteVideoFile by remember {
         mutableStateOf<PlatformFile?>(null)
-    }
-    var isSelectedResolution by remember {
-        mutableStateOf(false)
     }
 
     if (isShowDeleteVideoDialog) {
@@ -134,192 +381,44 @@ fun HomeScreen(
         )
     }
 
-    Column(
+
+    LazyColumn(
         modifier = modifier,
-        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        Row(
-            modifier = Modifier.fillMaxWidth()
-                .padding(
-                    top = 32.dp,
-                )
-                .padding(
-                    horizontal = 8.dp,
-                ),
-        ) {
-            TextField(
-                value = state.videoUrlWithId,
-                onValueChange = setVideoUrl,
-                singleLine = true,
-                modifier = Modifier
-                    .weight(1f),
-                label = {
-                    Text(
-                        text = stringResource(Res.string.url_to_video)
-                    )
-                },
-                keyboardActions = KeyboardActions(
-                    onSearch = {
-                        onGetVideo()
-                    }
-                )
-            )
-            Spacer(
-                modifier = Modifier
-                    .width(4.dp)
-            )
-            Button(
-                onClick = onGetVideo,
-                enabled = state.videoUrlWithId.isNotBlank(),
-            ) {
+        if (downloadedVideos.isEmpty()) {
+            item {
                 Text(
-                    text = stringResource(Res.string.get_video)
-                )
-            }
-        }
-        Spacer(
-            modifier = Modifier
-                .height(8.dp)
-        )
-        AsyncImage(
-            model = state.videoUrlM3U8?.previewUrl,
-            contentDescription = null,
-            modifier = Modifier
-                .clip(RoundedCornerShape(16.dp))
-                .fillMaxWidth(0.9f),
-            onSuccess = { println("Success: ${state.videoUrlM3U8?.previewUrl}") },
-            onError = { println("Error: ${it.result.throwable.message}") },
-        )
-        Spacer(
-            modifier = Modifier
-                .height(8.dp)
-        )
-        Text(
-            text = state.videoUrlM3U8?.title ?: "",
-            style = MaterialTheme.typography.titleLarge,
-            modifier = Modifier
-                .padding(horizontal = 8.dp),
-        )
-        if (state.videoQualities.isNotEmpty()) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(
-                        horizontal = 8.dp
-                    ),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Box(
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(horizontal = 8.dp),
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable {
-                                isSelectedResolution = true
-                            },
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Text(
-                            text = state.selectedVideoQuality?.resolution ?: "",
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                            style = MaterialTheme.typography.titleMedium,
-                        )
-                        Spacer(
-                            modifier = Modifier
-                                .width(4.dp),
-                        )
-                        Icon(
-                            imageVector = Icons.Default.ArrowDropDown,
-                            contentDescription = null,
-                            modifier = Modifier
-                                .rotate(if (isSelectedResolution) 180f else 0f),
-                        )
-                    }
-                    DropdownMenu(
-                        expanded = isSelectedResolution,
-                        onDismissRequest = { isSelectedResolution = false },
-                    ) {
-                        state.videoQualities.forEach { video ->
-                            DropdownMenuItem(
-                                onClick = {
-                                    isSelectedResolution = false
-                                    onSelectedVideoQuality(video)
-                                },
-                                text = {
-                                    Text(text = "${video.resolution} ${video.codecs}")
-                                }
-                            )
-                        }
-                    }
-                }
-                if (state.isDownload) {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                    ) {
-                        CircularProgressIndicator(
-                            progress = { state.downloadProgress.progress },
-                        )
-                        Text(
-                            text = formatSpeed(state.downloadProgress.currentSpeed)
-                        )
-                    }
-                } else {
-                    Button(
-                        onClick = {
-                            onDownloadVideo()
-                        }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Download,
-                            contentDescription = null,
-                        )
-                    }
-                }
-            }
-        }
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            if (state.downloadedVideos.isEmpty()) {
-                item {
-                    Text(
-                        text = stringResource(Res.string.no_videos_downloaded),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 8.dp),
-                        textAlign = androidx.compose.ui.text.style.TextAlign.Center,
-                    )
-                }
-            }
-            items(
-                count = state.downloadedVideos.size,
-                key = {
-                    state.downloadedVideos[it].name
-                }
-            ) {
-                VideoCard(
+                    text = stringResource(Res.string.no_videos_downloaded),
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 8.dp),
-                    name = state.downloadedVideos[it].name,
-                    onOpenVideo = {
-                        onOpenVideo(state.downloadedVideos[it].path)
-                    },
-                    onShare = {
-                        onShareVideo(state.downloadedVideos[it])
-                    },
-                    onDeleteVideo = {
-                        deleteVideoFile = state.downloadedVideos[it]
-                        isShowDeleteVideoDialog = true
-                    },
+                    textAlign = androidx.compose.ui.text.style.TextAlign.Center,
                 )
             }
+        }
+        items(
+            count = downloadedVideos.size,
+            key = {
+                downloadedVideos[it].name
+            }
+        ) {
+            VideoCard(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp),
+                name = downloadedVideos[it].name,
+                onOpenVideo = {
+                    onOpenVideo(downloadedVideos[it].path)
+                },
+                onShare = {
+                    onShareVideo(downloadedVideos[it])
+                },
+                onDeleteVideo = {
+                    deleteVideoFile = downloadedVideos[it]
+                    isShowDeleteVideoDialog = true
+                },
+            )
         }
     }
 }
