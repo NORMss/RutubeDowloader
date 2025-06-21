@@ -1,5 +1,6 @@
 package ru.normno.rutubedownloader.util.video
 
+import ru.normno.rutubedownloader.R
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -29,7 +30,7 @@ actual class VideoManager(
             context.startActivity(intent)
         } catch (e: Exception) {
             e.printStackTrace()
-            Toast.makeText(context, "Ошибка при открытии видео", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, context.getString(R.string.error_open_video), Toast.LENGTH_SHORT).show()
         }
     }
 }

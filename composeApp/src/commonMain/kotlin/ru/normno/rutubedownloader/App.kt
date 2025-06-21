@@ -19,6 +19,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -62,6 +63,10 @@ fun App() {
                 derivedStateOf {
                     Language.entries.first { it.iso == languageIso }
                 }
+            }
+
+            var isShowAboutAppDialog by remember {
+                mutableStateOf(false)
             }
 
             LaunchedEffect(selectedLanguage, Unit) {

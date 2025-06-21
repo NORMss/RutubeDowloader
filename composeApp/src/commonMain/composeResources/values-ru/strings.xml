@@ -7,4 +7,5 @@
     <string name="no_videos_downloaded">Нет загруженных видео</string>
     <string name="cancel">Отмена</string>
     <string name="url_to_video">URL на видео</string>
+    <string name="error_open_video">Ошибка при открытии видео</string>
 </resources>

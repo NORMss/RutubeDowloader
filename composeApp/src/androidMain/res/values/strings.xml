@@ -1,3 +1,4 @@
 <resources>
-    <string name="app_name">rutubeDownloader</string>
+    <string name="app_name">RuTube Downloader</string>
+    <string name="error_open_video">Error opening video</string>
 </resources>

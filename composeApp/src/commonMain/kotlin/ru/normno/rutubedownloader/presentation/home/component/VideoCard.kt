@@ -1,4 +1,4 @@
-package ru.normno.rutubedownloader.presentation.component
+package ru.normno.rutubedownloader.presentation.home.component
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer

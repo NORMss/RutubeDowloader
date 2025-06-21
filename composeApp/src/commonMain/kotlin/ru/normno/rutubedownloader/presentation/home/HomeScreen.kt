@@ -1,4 +1,4 @@
-@file:OptIn(ExperimentalTime::class)
+@file:OptIn(ExperimentalTime::class, ExperimentalMaterial3WindowSizeClassApi::class)
 
 package ru.normno.rutubedownloader.presentation.home
 
@@ -30,6 +30,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
+import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -47,9 +49,8 @@ import io.github.vinceglb.filekit.name
 import io.github.vinceglb.filekit.path
 import org.jetbrains.compose.resources.stringResource
 import ru.normno.rutubedownloader.domain.model.Video
-import ru.normno.rutubedownloader.presentation.component.VideoCard
-import ru.normno.rutubedownloader.presentation.util.WindowType
-import ru.normno.rutubedownloader.presentation.util.rememberWindowSize
+import ru.normno.rutubedownloader.presentation.common.calculateWindowSizeClass
+import ru.normno.rutubedownloader.presentation.home.component.VideoCard
 import ru.normno.rutubedownloader.util.dowload.Progress
 import ru.normno.rutubedownloader.util.dowload.Progress.formatSpeed
 import ru.normno.rutubedownloader.util.video.ParseM3U8Playlist.VideoQuality
@@ -75,9 +76,9 @@ fun HomeScreen(
     onDeleteVideo: (PlatformFile) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val windowSize = rememberWindowSize()
-    when (windowSize.with) {
-        WindowType.Compact -> {
+    val size = calculateWindowSizeClass()
+    when (size.widthSizeClass) {
+        WindowWidthSizeClass.Compact -> {
             Column(
                 modifier = modifier,
             ) {
@@ -140,6 +141,7 @@ fun HomeScreen(
                 )
             }
         }
+
     }
 }
 
