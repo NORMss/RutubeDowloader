@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Language
+import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -14,9 +15,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -24,7 +23,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import dev.burnoo.compose.remembersetting.rememberStringSetting
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -37,6 +35,7 @@ import ru.normno.rutubedownloader.domain.Language
 import ru.normno.rutubedownloader.domain.Localization
 import ru.normno.rutubedownloader.presentation.home.HomeScreen
 import ru.normno.rutubedownloader.presentation.home.HomeViewModel
+import ru.normno.rutubedownloader.presentation.home.component.AboutDialog
 import ru.normno.rutubedownloader.util.video.VideoManager
 import rutubedownloader.composeapp.generated.resources.Res
 import rutubedownloader.composeapp.generated.resources.app_name
@@ -71,7 +70,14 @@ fun App() {
 
             LaunchedEffect(selectedLanguage, Unit) {
                 localization.applyLanguage(languageIso)
-                println("localization.applyLanguage")
+            }
+
+            if (isShowAboutAppDialog) {
+                AboutDialog(
+                    onClose = {
+                        isShowAboutAppDialog = false
+                    }
+                )
             }
 
             Scaffold(
@@ -94,6 +100,16 @@ fun App() {
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.Language,
+                                    contentDescription = null,
+                                )
+                            }
+                            IconButton(
+                                onClick = {
+                                    isShowAboutAppDialog = true
+                                }
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Outlined.Info,
                                     contentDescription = null,
                                 )
                             }
