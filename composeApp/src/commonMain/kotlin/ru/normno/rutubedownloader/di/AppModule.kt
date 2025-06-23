@@ -15,6 +15,7 @@ import ru.normno.rutubedownloader.data.repository.FileRepositoryImpl
 import ru.normno.rutubedownloader.domain.repository.DownloaderRepository
 import ru.normno.rutubedownloader.domain.repository.FileRepository
 import ru.normno.rutubedownloader.presentation.home.HomeViewModel
+import ru.normno.rutubedownloader.util.platform.ShareLinkProvider
 
 expect val videoManagerModule: Module
 
@@ -34,12 +35,13 @@ object AppModule {
                 homeViewModel,
                 localizationModule,
                 videoManagerModule,
+                shareLinkProvider,
             )
         }
     }
 
     private val homeViewModel = module {
-        viewModel { HomeViewModel(get(), get()) }
+        viewModel { HomeViewModel(get(), get(), get()) }
     }
 
     private val fileRepository = module {
@@ -64,6 +66,10 @@ object AppModule {
 
     private val localModule = module {
         single { fileKit }
+    }
+
+    private val shareLinkProvider = module {
+        single { ShareLinkProvider() }
     }
 
     private fun provideHttpClient(): HttpClient {

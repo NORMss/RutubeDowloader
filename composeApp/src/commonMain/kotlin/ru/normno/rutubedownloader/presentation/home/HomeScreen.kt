@@ -27,6 +27,7 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
@@ -96,14 +97,24 @@ fun HomeScreen(
                     onOpenVideo = onOpenVideo,
                     onShare = onShareVideo,
                     onDeleteVideo = onDeleteVideo,
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(
+                            vertical = 8.dp,
+                            horizontal = 8.dp,
+                        ),
                 )
                 VideosList(
                     downloadedVideos = state.downloadedVideos,
                     onOpenVideo = onOpenVideo,
                     onShareVideo = onShareVideo,
                     onDeleteVideo = onDeleteVideo,
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(
+                            vertical = 8.dp,
+                            horizontal = 8.dp,
+                        ),
                 )
             }
         }
@@ -126,7 +137,12 @@ fun HomeScreen(
                     onOpenVideo = onOpenVideo,
                     onShare = onShareVideo,
                     onDeleteVideo = onDeleteVideo,
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(
+                            vertical = 8.dp,
+                            horizontal = 8.dp,
+                        ),
                 )
                 Spacer(
                     modifier = Modifier
@@ -137,7 +153,12 @@ fun HomeScreen(
                     onOpenVideo = onOpenVideo,
                     onShareVideo = onShareVideo,
                     onDeleteVideo = onDeleteVideo,
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(
+                            vertical = 8.dp,
+                            horizontal = 8.dp,
+                        ),
                 )
             }
         }
@@ -171,11 +192,8 @@ fun VideoCard(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth()
-                .padding(
-                    vertical = 8.dp,
-                    horizontal = 8.dp,
-                ),
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             TextField(
                 value = videoUrlWithId,
@@ -198,7 +216,7 @@ fun VideoCard(
                 modifier = Modifier
                     .width(4.dp)
             )
-            Button(
+            OutlinedButton(
                 onClick = onGetVideo,
                 enabled = videoUrlWithId.isNotBlank(),
             ) {
@@ -280,7 +298,7 @@ fun VideoCard(
                                     onSelectedVideoQuality(video)
                                 },
                                 text = {
-                                    Text(text = "${video.resolution} ${video.codecs}")
+                                    Text(text = video.resolution)
                                 }
                             )
                         }

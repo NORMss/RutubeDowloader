@@ -1,11 +1,11 @@
 <resources>
-    <string name="app_name">RuTube загрузчик</string>
+    <string name="app_name">RuTube Загрузчик</string>
     <string name="delete_video">Удалить видео</string>
     <string name="sure_to_delete">Вы уверены, что хотите удалить это видео?</string>
     <string name="delete">Удалить</string>
     <string name="get_video">Получить видео</string>
     <string name="no_videos_downloaded">Нет загруженных видео</string>
     <string name="cancel">Отмена</string>
-    <string name="url_to_video">URL на видео</string>
+    <string name="url_to_video">Ссылка на видео</string>
     <string name="error_open_video">Ошибка при открытии видео</string>
 </resources>

@@ -11,6 +11,7 @@ import kotlinx.coroutines.launch
 import ru.normno.rutubedownloader.domain.repository.DownloaderRepository
 import ru.normno.rutubedownloader.domain.repository.FileRepository
 import ru.normno.rutubedownloader.util.errorhendling.Result
+import ru.normno.rutubedownloader.util.platform.ShareLinkProvider
 import ru.normno.rutubedownloader.util.validate.SanitizeFileName.sanitizeFileName
 import ru.normno.rutubedownloader.util.video.ParseM3U8Playlist.VideoQuality
 import ru.normno.rutubedownloader.util.video.ParseM3U8Playlist.parseM3U8Playlist
@@ -21,6 +22,7 @@ import kotlin.time.ExperimentalTime
 class HomeViewModel(
     private val downloaderRepository: DownloaderRepository,
     private val fileRepository: FileRepository,
+    private val shareLinkProvider: ShareLinkProvider,
 ) : ViewModel() {
     val state: StateFlow<HomeState>
         field = MutableStateFlow(HomeState())
@@ -28,6 +30,10 @@ class HomeViewModel(
     init {
         viewModelScope.launch(Dispatchers.IO) {
             getAllVideos()
+        }
+        shareLinkProvider.getSharedLink()?.also {
+            setVideoUrl(it)
+            getVideoById()
         }
     }
 

@@ -6,6 +6,7 @@ import android.content.Intent
 import android.net.Uri
 import android.widget.Toast
 import androidx.core.content.FileProvider
+import ru.normno.rutubedownloader.BuildConfig
 import java.io.File
 
 actual class VideoManager(
@@ -17,7 +18,7 @@ actual class VideoManager(
 
             val uri: Uri = FileProvider.getUriForFile(
                 context,
-                "ru.normno.rutubedownloader.fileprovider",
+                "${BuildConfig.APPLICATION_ID}.fileprovider",
                 file
             )
 
