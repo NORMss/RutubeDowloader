@@ -4,14 +4,19 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.vinceglb.filekit.PlatformFile
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ru.normno.rutubedownloader.domain.repository.DownloaderRepository
 import ru.normno.rutubedownloader.domain.repository.FileRepository
+import ru.normno.rutubedownloader.util.errorhendling.Error
 import ru.normno.rutubedownloader.util.errorhendling.Result
 import ru.normno.rutubedownloader.util.platform.ShareLinkProvider
+import ru.normno.rutubedownloader.util.snackbar.SnackbarController
+import ru.normno.rutubedownloader.util.snackbar.SnackbarEvent
 import ru.normno.rutubedownloader.util.validate.SanitizeFileName.sanitizeFileName
 import ru.normno.rutubedownloader.util.video.ParseM3U8Playlist.VideoQuality
 import ru.normno.rutubedownloader.util.video.ParseM3U8Playlist.parseM3U8Playlist
@@ -97,7 +102,7 @@ class HomeViewModel(
                         }
                     }
 
-                    is Result.Success -> {
+                    is Result.Succes -> {
                         getAllVideos()
                         state.update {
                             it.copy(
@@ -126,7 +131,7 @@ class HomeViewModel(
 
                         }
 
-                        is Result.Success -> {
+                        is Result.Succes -> {
                             state.update {
                                 it.copy(
                                     videoUrlM3U8 = result.data
@@ -142,7 +147,7 @@ class HomeViewModel(
 
                         }
 
-                        is Result.Success -> {
+                        is Result.Succes -> {
                             result.data?.decodeToString()?.let { m3u8 ->
                                 val videoQualities = parseM3U8Playlist(m3u8)
                                 state.update {

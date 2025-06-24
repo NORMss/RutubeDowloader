@@ -8,4 +8,6 @@
     <string name="cancel">Cancel</string>
     <string name="url_to_video">Link to video</string>
     <string name="error_open_video">Error opening video</string>
+    <string name="dont_exit_app">Do not exit the application while downloading</string>
+    <string name="video_to_buffer">Video copied to buffer</string>
 </resources>

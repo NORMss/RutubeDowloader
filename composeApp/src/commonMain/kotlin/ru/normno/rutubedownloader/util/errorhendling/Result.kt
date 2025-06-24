@@ -4,7 +4,7 @@ sealed class Result<D, E : Error>(
     val data: D? = null,
     val error: ru.normno.rutubedownloader.util.errorhendling.Error? = null,
 ) {
-    class Success<D>(
+    class Succes<D>(
         data: D?
     ) : Result<D, ru.normno.rutubedownloader.util.errorhendling.Error>(data)
 

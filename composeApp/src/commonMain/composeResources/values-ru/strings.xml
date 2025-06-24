@@ -8,4 +8,6 @@
     <string name="cancel">Отмена</string>
     <string name="url_to_video">Ссылка на видео</string>
     <string name="error_open_video">Ошибка при открытии видео</string>
+    <string name="dont_exit_app">Не выходите из приложения во время скачивания</string>
+    <string name="video_to_buffer">Видео скопировано в буфер</string>
 </resources>

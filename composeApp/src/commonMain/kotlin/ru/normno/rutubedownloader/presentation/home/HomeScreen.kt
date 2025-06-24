@@ -37,6 +37,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -48,12 +49,17 @@ import coil3.compose.AsyncImage
 import io.github.vinceglb.filekit.PlatformFile
 import io.github.vinceglb.filekit.name
 import io.github.vinceglb.filekit.path
+import io.ktor.util.Platform
+import io.ktor.util.PlatformUtils.IS_JVM
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import ru.normno.rutubedownloader.domain.model.Video
 import ru.normno.rutubedownloader.presentation.common.calculateWindowSizeClass
 import ru.normno.rutubedownloader.presentation.home.component.VideoCard
 import ru.normno.rutubedownloader.util.dowload.Progress
 import ru.normno.rutubedownloader.util.dowload.Progress.formatSpeed
+import ru.normno.rutubedownloader.util.snackbar.SnackbarController
+import ru.normno.rutubedownloader.util.snackbar.SnackbarEvent
 import ru.normno.rutubedownloader.util.video.ParseM3U8Playlist.VideoQuality
 import rutubedownloader.composeapp.generated.resources.Res
 import rutubedownloader.composeapp.generated.resources.cancel
@@ -63,6 +69,8 @@ import rutubedownloader.composeapp.generated.resources.get_video
 import rutubedownloader.composeapp.generated.resources.no_videos_downloaded
 import rutubedownloader.composeapp.generated.resources.sure_to_delete
 import rutubedownloader.composeapp.generated.resources.url_to_video
+import rutubedownloader.composeapp.generated.resources.dont_exit_app
+import rutubedownloader.composeapp.generated.resources.video_to_buffer
 import kotlin.time.ExperimentalTime
 
 @Composable
@@ -186,6 +194,8 @@ fun VideoCard(
     var isSelectedResolution by remember {
         mutableStateOf(false)
     }
+
+    val scope = rememberCoroutineScope()
 
     Column(
         modifier = modifier,
@@ -316,9 +326,17 @@ fun VideoCard(
                         )
                     }
                 } else {
+                    val message = stringResource(Res.string.dont_exit_app)
                     Button(
                         onClick = {
                             onDownloadVideo()
+                            scope.launch {
+                                SnackbarController.sendEvent(
+                                    SnackbarEvent(
+                                        message = message,
+                                    )
+                                )
+                            }
                         }
                     ) {
                         Icon(
@@ -340,6 +358,8 @@ fun VideosList(
     onDeleteVideo: (PlatformFile) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val scope = rememberCoroutineScope()
+
     var isShowDeleteVideoDialog by remember {
         mutableStateOf(false)
     }
@@ -423,6 +443,7 @@ fun VideosList(
                 downloadedVideos[it].name
             }
         ) {
+            val message = stringResource(Res.string.video_to_buffer)
             VideoCard(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -432,6 +453,15 @@ fun VideosList(
                     onOpenVideo(downloadedVideos[it].path)
                 },
                 onShare = {
+                    if(IS_JVM){
+                        scope.launch {
+                            SnackbarController.sendEvent(
+                                SnackbarEvent(
+                                    message = message,
+                                )
+                            )
+                        }
+                    }
                     onShareVideo(downloadedVideos[it])
                 },
                 onDeleteVideo = {

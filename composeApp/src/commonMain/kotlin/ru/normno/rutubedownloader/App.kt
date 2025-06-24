@@ -17,6 +17,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -26,12 +30,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.burnoo.compose.remembersetting.rememberStringSetting
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.KoinMultiplatformApplication
@@ -41,10 +47,13 @@ import org.koin.core.annotation.KoinExperimentalAPI
 import ru.normno.rutubedownloader.di.AppModule.createKoinConfiguration
 import ru.normno.rutubedownloader.domain.Language
 import ru.normno.rutubedownloader.domain.Localization
+import ru.normno.rutubedownloader.presentation.common.AppSnackbar
+import ru.normno.rutubedownloader.presentation.common.ObserveAsEvents
 import ru.normno.rutubedownloader.presentation.home.HomeScreen
 import ru.normno.rutubedownloader.presentation.home.HomeViewModel
 import ru.normno.rutubedownloader.presentation.home.component.AboutAppDialog
 import ru.normno.rutubedownloader.util.platform.PlatformConfig
+import ru.normno.rutubedownloader.util.snackbar.SnackbarController
 import ru.normno.rutubedownloader.util.video.VideoManager
 import rutubedownloader.composeapp.generated.resources.Res
 import rutubedownloader.composeapp.generated.resources.app_name
@@ -72,6 +81,28 @@ fun App() {
             }
 
             localization.applyLanguage(languageIso)
+
+            val snackbarHostState = remember { SnackbarHostState() }
+            val scope = rememberCoroutineScope()
+
+            ObserveAsEvents(
+                flow = SnackbarController.events,
+                key1 = snackbarHostState,
+            ) { event ->
+                scope.launch {
+                    snackbarHostState.currentSnackbarData?.dismiss()
+
+                    val result = snackbarHostState.showSnackbar(
+                        message = event.message,
+                        actionLabel = event.action?.name,
+                        duration = SnackbarDuration.Short,
+                    )
+
+                    if (result == SnackbarResult.ActionPerformed) {
+                        event.action?.action?.invoke()
+                    }
+                }
+            }
 
             var isShowAboutAppDialog by remember {
                 mutableStateOf(false)
@@ -149,6 +180,11 @@ fun App() {
                                 }
                             }
                         )
+                    },
+                    snackbarHost = {
+                        SnackbarHost(hostState = snackbarHostState) { data ->
+                            AppSnackbar(data)
+                        }
                     }
                 ) { paddingValues ->
                     HomeScreen(

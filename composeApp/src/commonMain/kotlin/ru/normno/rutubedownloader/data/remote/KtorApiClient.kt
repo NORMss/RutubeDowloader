@@ -130,7 +130,7 @@ class KtorApiClient(
                     val segmentStartTime = System.currentTimeMillis()
 
                     when (val result = downloadFile(segmentUrl)) {
-                        is Result.Success -> {
+                        is Result.Succes -> {
                             result.data?.let { data ->
                                 sink.write(data)
                                 totalDownloadedBytes += data.size.toLong()
@@ -159,7 +159,7 @@ class KtorApiClient(
                 }
             }
 
-            Result.Success(outputFile.size())
+            Result.Succes(outputFile.size())
         } catch (e: Exception) {
             outputFile.delete(mustExist = false)
             Result.Error(RemoteErrorWithCode(Error.Remote.UNKNOWN))
@@ -194,7 +194,7 @@ class KtorApiClient(
 
     suspend inline fun <reified R> responseToResult(response: HttpResponse): Result<R, Error> {
         return when (response.status.value) {
-            in 200..299 -> Result.Success(
+            in 200..299 -> Result.Succes(
                 response.body<R>()
             )
 
