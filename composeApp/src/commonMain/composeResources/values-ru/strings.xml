@@ -10,4 +10,16 @@
     <string name="error_open_video">Ошибка при открытии видео</string>
     <string name="dont_exit_app">Не выходите из приложения во время скачивания</string>
     <string name="video_to_buffer">Видео скопировано в буфер</string>
+
+    <string name="error_not_found">Ресурс не найден</string>
+    <string name="error_io_exception">Произошла ошибка ввода-вывода</string>
+    <string name="error_unknown_local">Произошла неизвестная ошибка</string>
+
+    <string name="error_client_error">Неверная ссылка на видео. Пожалуйста, проверьте ссылку</string>
+    <string name="error_redirection">Слишком много перенаправлений</string>
+    <string name="error_server_error">Ошибка сервера. Пожалуйста, попробуйте позже</string>
+    <string name="error_no_internet">Отсутствует подключение к интернету</string>
+    <string name="error_serialization">Не удалось прочитать ответ сервера (возможно, включён VPN)</string>
+    <string name="error_unknown_remote">Неизвестная сетевая ошибка</string>
+    <string name="error_remote_with_code">Ошибка сервера с кодом: %1$d</string>
 </resources>

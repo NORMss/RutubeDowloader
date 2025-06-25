@@ -15,8 +15,6 @@ import ru.normno.rutubedownloader.domain.repository.FileRepository
 import ru.normno.rutubedownloader.util.errorhendling.Error
 import ru.normno.rutubedownloader.util.errorhendling.Result
 import ru.normno.rutubedownloader.util.platform.ShareLinkProvider
-import ru.normno.rutubedownloader.util.snackbar.SnackbarController
-import ru.normno.rutubedownloader.util.snackbar.SnackbarEvent
 import ru.normno.rutubedownloader.util.validate.SanitizeFileName.sanitizeFileName
 import ru.normno.rutubedownloader.util.video.ParseM3U8Playlist.VideoQuality
 import ru.normno.rutubedownloader.util.video.ParseM3U8Playlist.parseM3U8Playlist
@@ -31,6 +29,9 @@ class HomeViewModel(
 ) : ViewModel() {
     val state: StateFlow<HomeState>
         field = MutableStateFlow(HomeState())
+
+    private val _errorEvent = Channel<Error>()
+    val errorEvent = _errorEvent.receiveAsFlow()
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
@@ -128,7 +129,7 @@ class HomeViewModel(
                     )
                     when (result) {
                         is Result.Error -> {
-
+                            sendError(result.error)
                         }
 
                         is Result.Succes -> {
@@ -170,6 +171,14 @@ class HomeViewModel(
                 it.copy(
                     downloadedVideos = files,
                 )
+            }
+        }
+    }
+
+    private fun sendError(error: Error?) {
+        error?.let {
+            viewModelScope.launch {
+                _errorEvent.send(error)
             }
         }
     }

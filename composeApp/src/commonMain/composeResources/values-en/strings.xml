@@ -10,4 +10,16 @@
     <string name="error_open_video">Error opening video</string>
     <string name="dont_exit_app">Do not exit the application while downloading</string>
     <string name="video_to_buffer">Video copied to buffer</string>
+
+    <string name="error_not_found">Resource not found</string>
+    <string name="error_io_exception">Input/output error occurred</string>
+    <string name="error_unknown_local">An unknown error occurred</string>
+
+    <string name="error_client_error">Invalid video URL. Please check the link</string>
+    <string name="error_redirection">Too many redirects</string>
+    <string name="error_server_error">Server error. Please try again later</string>
+    <string name="error_no_internet">No internet connection</string>
+    <string name="error_serialization">Failed to read server response (possible VPN issue)</string>
+    <string name="error_unknown_remote">Unknown network error</string>
+    <string name="error_remote_with_code">Server error with code: %1$d</string>
 </resources>

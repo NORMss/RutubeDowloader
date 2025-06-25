@@ -25,6 +25,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
@@ -37,6 +39,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.burnoo.compose.remembersetting.rememberStringSetting
+import jdk.internal.joptsimple.internal.Messages.message
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -52,11 +55,24 @@ import ru.normno.rutubedownloader.presentation.common.ObserveAsEvents
 import ru.normno.rutubedownloader.presentation.home.HomeScreen
 import ru.normno.rutubedownloader.presentation.home.HomeViewModel
 import ru.normno.rutubedownloader.presentation.home.component.AboutAppDialog
+import ru.normno.rutubedownloader.util.errorhendling.Error
+import ru.normno.rutubedownloader.util.errorhendling.RemoteErrorWithCode
 import ru.normno.rutubedownloader.util.platform.PlatformConfig
 import ru.normno.rutubedownloader.util.snackbar.SnackbarController
+import ru.normno.rutubedownloader.util.snackbar.SnackbarEvent
 import ru.normno.rutubedownloader.util.video.VideoManager
 import rutubedownloader.composeapp.generated.resources.Res
 import rutubedownloader.composeapp.generated.resources.app_name
+import rutubedownloader.composeapp.generated.resources.error_client_error
+import rutubedownloader.composeapp.generated.resources.error_io_exception
+import rutubedownloader.composeapp.generated.resources.error_no_internet
+import rutubedownloader.composeapp.generated.resources.error_not_found
+import rutubedownloader.composeapp.generated.resources.error_redirection
+import rutubedownloader.composeapp.generated.resources.error_remote_with_code
+import rutubedownloader.composeapp.generated.resources.error_serialization
+import rutubedownloader.composeapp.generated.resources.error_server_error
+import rutubedownloader.composeapp.generated.resources.error_unknown_local
+import rutubedownloader.composeapp.generated.resources.error_unknown_remote
 
 @Composable
 @Preview
@@ -84,6 +100,29 @@ fun App() {
 
             val snackbarHostState = remember { SnackbarHostState() }
             val scope = rememberCoroutineScope()
+
+            val error by viewModel.errorEvent.collectAsState(initial = null)
+
+            error?.let {
+                val message = when (it) {
+                    Error.Local.NOT_FOUND -> stringResource(Res.string.error_not_found)
+                    Error.Local.IO_EXCEPTION -> stringResource(Res.string.error_io_exception)
+                    Error.Local.UNKNOWN -> stringResource(Res.string.error_unknown_local)
+
+                    Error.Remote.CLIENT_ERROR -> stringResource(Res.string.error_client_error)
+                    Error.Remote.REDIRECTION_ERROR -> stringResource(Res.string.error_redirection)
+                    Error.Remote.SERVER_ERROR -> stringResource(Res.string.error_server_error)
+                    Error.Remote.NO_INTERNET_ERROR -> stringResource(Res.string.error_no_internet)
+                    Error.Remote.SERIALIZATION_ERROR -> stringResource(Res.string.error_serialization)
+                    Error.Remote.UNKNOWN -> stringResource(Res.string.error_unknown_remote)
+
+                    is RemoteErrorWithCode -> stringResource(Res.string.error_remote_with_code, it.code)
+                }
+
+                LaunchedEffect(message) {
+                    SnackbarController.sendEvent(SnackbarEvent(message))
+                }
+            }
 
             ObserveAsEvents(
                 flow = SnackbarController.events,

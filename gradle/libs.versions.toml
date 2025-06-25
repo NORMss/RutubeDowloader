@@ -25,8 +25,12 @@ accompanist = "0.37.3"
 remember-setting = "1.0.3"
 material3-adaptive = "1.1.2"
 navigation = "2.9.0-beta03"
+proguard = "7.7.0"
 
 [libraries]
+#proguard
+proguard = { module = "com.guardsquare:proguard-gradle", version.ref = "proguard" }
+
 #adaptive navigation
 navigation-compose = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "navigation" }
 navigation-common = { module = "org.jetbrains.androidx.navigation:navigation-common", version.ref = "navigation" }
