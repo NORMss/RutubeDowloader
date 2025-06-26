@@ -1,6 +1,8 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
+import org.jetbrains.kotlin.com.intellij.openapi.util.text.HtmlChunk.icon
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import java.util.UUID
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -22,16 +24,16 @@ kotlin {
             jvmTarget.set(JvmTarget.JVM_17)
         }
     }
-    
-    jvm("desktop"){
-        compilerOptions{
+
+    jvm("desktop") {
+        compilerOptions {
             jvmTarget.set(JvmTarget.JVM_17)
         }
     }
-    
+
     sourceSets {
         val desktopMain by getting
-        
+
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
@@ -136,8 +138,21 @@ compose.desktop {
 
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "ru.normno.rutubedownloader"
+            packageName = "RuTube Downloader"
             packageVersion = "1.0.0"
+            includeAllModules = false
+            vendor = "normno.ru"
+            modules(
+                "java.base",
+                "java.desktop"
+            )
+            windows{
+                iconFile.set(project.file("src/commonMain/composeResources/drawable/rutubeDownloader_icon.ico"))
+                menuGroup = "Video Tools"
+                perUserInstall = true
+                upgradeUuid = UUID.randomUUID().toString()
+                shortcut = true
+            }
         }
     }
 }
