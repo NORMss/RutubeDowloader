@@ -55,6 +55,7 @@ import ru.normno.rutubedownloader.presentation.common.ObserveAsEvents
 import ru.normno.rutubedownloader.presentation.home.HomeScreen
 import ru.normno.rutubedownloader.presentation.home.HomeViewModel
 import ru.normno.rutubedownloader.presentation.home.component.AboutAppDialog
+import ru.normno.rutubedownloader.theme.RuTubeDownloader
 import ru.normno.rutubedownloader.util.errorhendling.Error
 import ru.normno.rutubedownloader.util.errorhendling.RemoteErrorWithCode
 import ru.normno.rutubedownloader.util.platform.PlatformConfig
@@ -80,7 +81,7 @@ fun App() {
     KoinMultiplatformApplication(
         config = createKoinConfiguration()
     ) {
-        MaterialTheme {
+        RuTubeDownloader {
             val viewModel = koinViewModel<HomeViewModel>()
             val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -161,12 +162,12 @@ fun App() {
                         .fillMaxSize(),
                     topBar = {
                         TopAppBar(
-                            colors = TopAppBarDefaults.topAppBarColors(
-                                containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                                navigationIconContentColor = MaterialTheme.colorScheme.onSecondaryContainer,
-                                actionIconContentColor = MaterialTheme.colorScheme.onSecondaryContainer,
-                                titleContentColor = MaterialTheme.colorScheme.onSecondaryContainer,
-                            ),
+//                            colors = TopAppBarDefaults.topAppBarColors(
+//                                containerColor = MaterialTheme.colorScheme.secondaryContainer,
+//                                navigationIconContentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+//                                actionIconContentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+//                                titleContentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+//                            ),
                             title = {
                                 Row(
                                     verticalAlignment = Alignment.Bottom,

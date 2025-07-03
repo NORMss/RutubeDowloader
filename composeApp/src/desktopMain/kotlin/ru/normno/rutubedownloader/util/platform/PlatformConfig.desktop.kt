@@ -1,5 +1,5 @@
 package ru.normno.rutubedownloader.util.platform
 
 actual object PlatformConfig {
-    actual val versionCode = "1.0"
+    actual val versionCode = "1.1"
 }
