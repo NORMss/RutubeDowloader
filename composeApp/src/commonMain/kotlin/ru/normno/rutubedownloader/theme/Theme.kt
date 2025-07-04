@@ -13,6 +13,7 @@ val LightColorTheme = lightColorScheme(
     background = Background,
     onSurface = OnSurface,
     onBackground = OnBackground,
+    surfaceContainerHighest = SurfaceContainerHighest,
 )
 
 val DarkColorTheme = darkColorScheme(
@@ -22,6 +23,7 @@ val DarkColorTheme = darkColorScheme(
     background = BackgroundDark,
     onSurface = OnSurfaceDark,
     onBackground = OnBackgroundDark,
+    surfaceContainerHighest = SurfaceContainerHighestDark,
 )
 
 @Composable
