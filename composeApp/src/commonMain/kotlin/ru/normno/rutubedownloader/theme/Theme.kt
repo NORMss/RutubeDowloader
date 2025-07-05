@@ -14,6 +14,7 @@ val LightColorTheme = lightColorScheme(
     onSurface = OnSurface,
     onBackground = OnBackground,
     surfaceContainerHighest = SurfaceContainerHighest,
+    error = Error,
 )
 
 val DarkColorTheme = darkColorScheme(
@@ -24,6 +25,7 @@ val DarkColorTheme = darkColorScheme(
     onSurface = OnSurfaceDark,
     onBackground = OnBackgroundDark,
     surfaceContainerHighest = SurfaceContainerHighestDark,
+    error = Error,
 )
 
 @Composable
