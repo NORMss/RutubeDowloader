@@ -7,11 +7,14 @@ import io.github.vinceglb.filekit.dialogs.openFileSaver
 import io.github.vinceglb.filekit.filesDir
 import io.github.vinceglb.filekit.list
 import io.github.vinceglb.filekit.write
+import ru.normno.rutubedownloader.data.locale.disk.PlatformDiskUsage
+import ru.normno.rutubedownloader.domain.model.Disk
 import ru.normno.rutubedownloader.domain.repository.FileRepository
 import ru.normno.rutubedownloader.util.file.shareFile
 
 class FileRepositoryImpl(
     private val fileKit: FileKit,
+    private val platformDiskUsage: PlatformDiskUsage
 ) : FileRepository {
     override suspend fun saveVideo(
         byteArray: ByteArray,
@@ -35,5 +38,9 @@ class FileRepositoryImpl(
 
     override suspend fun deleteFile(file: PlatformFile) {
         file.delete()
+    }
+
+    override suspend fun getUsedSpace(): Disk {
+        return platformDiskUsage.getUsedSpace()
     }
 }

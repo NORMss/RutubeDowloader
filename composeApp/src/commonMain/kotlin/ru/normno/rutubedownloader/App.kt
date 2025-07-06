@@ -23,7 +23,6 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -39,7 +38,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.burnoo.compose.remembersetting.rememberStringSetting
-import jdk.internal.joptsimple.internal.Messages.message
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -48,8 +46,8 @@ import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.annotation.KoinExperimentalAPI
 import ru.normno.rutubedownloader.di.AppModule.createKoinConfiguration
-import ru.normno.rutubedownloader.domain.Language
-import ru.normno.rutubedownloader.domain.Localization
+import ru.normno.rutubedownloader.data.locale.localiztion.Language
+import ru.normno.rutubedownloader.data.locale.localiztion.Localization
 import ru.normno.rutubedownloader.presentation.common.AppSnackbar
 import ru.normno.rutubedownloader.presentation.common.ObserveAsEvents
 import ru.normno.rutubedownloader.presentation.home.HomeScreen

@@ -1,6 +1,7 @@
 package ru.normno.rutubedownloader.presentation.home
 
 import io.github.vinceglb.filekit.PlatformFile
+import ru.normno.rutubedownloader.domain.model.Disk
 import ru.normno.rutubedownloader.domain.model.Video
 import ru.normno.rutubedownloader.util.dowload.Progress
 import ru.normno.rutubedownloader.util.errorhendling.Error
@@ -14,4 +15,5 @@ data class HomeState(
     val selectedVideoQuality: VideoQuality? = null,
     val downloadedVideos: List<PlatformFile> = emptyList(),
     val isDownload: Boolean = false,
+    val disk: Disk = Disk(),
 )

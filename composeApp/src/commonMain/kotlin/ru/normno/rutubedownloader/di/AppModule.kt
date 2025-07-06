@@ -6,6 +6,7 @@ import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.KoinConfiguration
 import org.koin.dsl.module
+import ru.normno.rutubedownloader.data.locale.disk.PlatformDiskUsage
 import ru.normno.rutubedownloader.data.remote.KtorApiClient
 import ru.normno.rutubedownloader.data.remote.api.RuTubeVideo
 import ru.normno.rutubedownloader.data.remote.buildHttpClient
@@ -20,6 +21,8 @@ import ru.normno.rutubedownloader.util.platform.ShareLinkProvider
 expect val videoManagerModule: Module
 
 expect val localizationModule: Module
+
+expect val diskUsageModule: Module
 
 object AppModule {
 
@@ -36,6 +39,7 @@ object AppModule {
                 localizationModule,
                 videoManagerModule,
                 shareLinkProvider,
+                platformDiskUsage,
             )
         }
     }
@@ -44,8 +48,12 @@ object AppModule {
         viewModel { HomeViewModel(get(), get(), get()) }
     }
 
+    private val platformDiskUsage = module {
+        single<PlatformDiskUsage> { PlatformDiskUsage() }
+    }
+
     private val fileRepository = module {
-        single<FileRepository> { FileRepositoryImpl(get()) }
+        single<FileRepository> { FileRepositoryImpl(get(), get()) }
     }
 
     private val downloaderRepository = module {

@@ -36,6 +36,7 @@ class HomeViewModel(
     init {
         viewModelScope.launch(Dispatchers.IO) {
             getAllVideos()
+            getDiskInfo()
         }
         shareLinkProvider.getSharedLink()?.also {
             setVideoUrl(it)
@@ -162,6 +163,14 @@ class HomeViewModel(
                     }
                 }
             }
+        }
+    }
+
+    private suspend fun getDiskInfo(){
+        state.update {
+            it.copy(
+                disk = fileRepository.getUsedSpace()
+            )
         }
     }
 

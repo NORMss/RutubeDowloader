@@ -5,9 +5,9 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@drawable/rutubedownloader_icon"
+        android:icon="@mipmap/adaptiveicon"
         android:label="@string/app_name"
-        android:roundIcon="@drawable/rutubedownloader_icon"
+        android:roundIcon="@mipmap/adaptiveicon"
         android:supportsRtl="true"
         android:theme="@android:style/Theme.Material.Light.NoActionBar">
         <activity

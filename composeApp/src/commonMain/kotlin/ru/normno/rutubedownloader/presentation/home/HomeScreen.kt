@@ -49,10 +49,10 @@ import coil3.compose.AsyncImage
 import io.github.vinceglb.filekit.PlatformFile
 import io.github.vinceglb.filekit.name
 import io.github.vinceglb.filekit.path
-import io.ktor.util.Platform
 import io.ktor.util.PlatformUtils.IS_JVM
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
+import ru.normno.rutubedownloader.domain.model.Disk
 import ru.normno.rutubedownloader.domain.model.Video
 import ru.normno.rutubedownloader.presentation.common.calculateWindowSizeClass
 import ru.normno.rutubedownloader.presentation.home.component.VideoCard
@@ -65,11 +65,11 @@ import rutubedownloader.composeapp.generated.resources.Res
 import rutubedownloader.composeapp.generated.resources.cancel
 import rutubedownloader.composeapp.generated.resources.delete
 import rutubedownloader.composeapp.generated.resources.delete_video
+import rutubedownloader.composeapp.generated.resources.dont_exit_app
 import rutubedownloader.composeapp.generated.resources.get_video
 import rutubedownloader.composeapp.generated.resources.no_videos_downloaded
 import rutubedownloader.composeapp.generated.resources.sure_to_delete
 import rutubedownloader.composeapp.generated.resources.url_to_video
-import rutubedownloader.composeapp.generated.resources.dont_exit_app
 import rutubedownloader.composeapp.generated.resources.video_to_buffer
 import kotlin.time.ExperimentalTime
 
@@ -99,6 +99,7 @@ fun HomeScreen(
                     selectedVideoQuality = state.selectedVideoQuality,
                     isDownload = state.isDownload,
                     downloadProgress = state.downloadProgress,
+                    disk = state.disk,
                     onSelectedVideoQuality = onSelectedVideoQuality,
                     onDownloadVideo = onDownloadVideo,
                     onGetVideo = onGetVideo,
@@ -139,6 +140,7 @@ fun HomeScreen(
                     selectedVideoQuality = state.selectedVideoQuality,
                     isDownload = state.isDownload,
                     downloadProgress = state.downloadProgress,
+                    disk = state.disk,
                     onSelectedVideoQuality = onSelectedVideoQuality,
                     onDownloadVideo = onDownloadVideo,
                     onGetVideo = onGetVideo,
@@ -189,6 +191,7 @@ fun VideoCard(
     selectedVideoQuality: VideoQuality? = null,
     isDownload: Boolean = false,
     downloadProgress: Progress.DownloadProgress,
+    disk: Disk,
     modifier: Modifier = Modifier,
 ) {
     var isSelectedResolution by remember {
@@ -347,6 +350,10 @@ fun VideoCard(
                 }
             }
         }
+        Text(
+            text = "Total: ${disk.total.toFloat() / (1024 * 1024 * 1024)} " +
+                    "Free ${disk.free.toFloat() / (1024 * 1024 * 1024)}"
+        )
     }
 }
 
@@ -417,7 +424,8 @@ fun VideosList(
                         text = stringResource(Res.string.cancel),
                     )
                 }
-            }
+            },
+            containerColor = MaterialTheme.colorScheme.surface,
         )
     }
 
@@ -453,7 +461,7 @@ fun VideosList(
                     onOpenVideo(downloadedVideos[it].path)
                 },
                 onShare = {
-                    if(IS_JVM){
+                    if (IS_JVM) {
                         scope.launch {
                             SnackbarController.sendEvent(
                                 SnackbarEvent(

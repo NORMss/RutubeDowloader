@@ -1,4 +1,4 @@
-package ru.normno.rutubedownloader.domain
+package ru.normno.rutubedownloader.data.locale.localiztion
 
 import android.content.Context
 import android.os.LocaleList
