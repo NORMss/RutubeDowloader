@@ -26,6 +26,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
@@ -55,6 +56,7 @@ import org.jetbrains.compose.resources.stringResource
 import ru.normno.rutubedownloader.domain.model.Disk
 import ru.normno.rutubedownloader.domain.model.Video
 import ru.normno.rutubedownloader.presentation.common.calculateWindowSizeClass
+import ru.normno.rutubedownloader.presentation.home.component.DeleteVideoDialog
 import ru.normno.rutubedownloader.presentation.home.component.VideoCard
 import ru.normno.rutubedownloader.util.dowload.Progress
 import ru.normno.rutubedownloader.util.dowload.Progress.formatSpeed
@@ -354,6 +356,16 @@ fun VideoCard(
             text = "Total: ${disk.total.toFloat() / (1024 * 1024 * 1024)} " +
                     "Free ${disk.free.toFloat() / (1024 * 1024 * 1024)}"
         )
+            LinearProgressIndicator(
+            progress = {
+                val value =
+                    (disk.free.toFloat() / disk.total.toFloat()).takeIf { !it.isNaN() } ?: 0f
+                1f - value
+            },
+            drawStopIndicator = {
+
+            }
+        )
     }
 }
 
@@ -376,56 +388,16 @@ fun VideosList(
     }
 
     if (isShowDeleteVideoDialog) {
-        AlertDialog(
-            icon = {
-                Icon(
-                    imageVector = Icons.Default.Delete,
-                    contentDescription = null,
-                )
-            },
-            title = {
-                Text(
-                    text = stringResource(Res.string.delete_video),
-                )
-            },
-            text = {
-                Text(
-                    text = stringResource(Res.string.sure_to_delete),
-                )
-            },
-            onDismissRequest = {
-                isShowDeleteVideoDialog = false
-            },
-            confirmButton = {
-                Button(
-                    onClick = {
-                        deleteVideoFile?.let {
-                            onDeleteVideo(it)
-                        }
-                        isShowDeleteVideoDialog = false
-                    },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.error,
-                        contentColor = MaterialTheme.colorScheme.onError,
-                    )
-                ) {
-                    Text(
-                        text = stringResource(Res.string.delete),
-                    )
+        DeleteVideoDialog(
+            deleteVideoFile = deleteVideoFile?.name,
+            onDeleteVideo = {
+                deleteVideoFile?.let { file ->
+                    onDeleteVideo(file)
                 }
             },
-            dismissButton = {
-                TextButton(
-                    onClick = {
-                        isShowDeleteVideoDialog = false
-                    },
-                ) {
-                    Text(
-                        text = stringResource(Res.string.cancel),
-                    )
-                }
-            },
-            containerColor = MaterialTheme.colorScheme.surface,
+            showDeleteVideoDialog = { bool ->
+                isShowDeleteVideoDialog = bool
+            }
         )
     }
 
