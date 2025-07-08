@@ -44,20 +44,31 @@ class HomeViewModel(
         }
     }
 
-    fun onDeleteFile(file: PlatformFile) {
+    fun onAction(action: HomeAction) {
+        when (action) {
+            is HomeAction.OnDeleteVideo -> onDeleteFile(action.platformFile)
+            HomeAction.OnDownloadVideo -> onDownloadVideo()
+            HomeAction.OnGetVideo -> getVideoById()
+            is HomeAction.OnSelectedVideoQuality -> onSelectedVideoQuality(action.videoQuality)
+            is HomeAction.OnShareVideo -> onShareVideo(action.platformFile)
+            is HomeAction.SetVideoUrl -> setVideoUrl(action.str)
+        }
+    }
+
+    private fun onDeleteFile(file: PlatformFile) {
         viewModelScope.launch(Dispatchers.IO) {
             fileRepository.deleteFile(file)
             getAllVideos()
         }
     }
 
-    fun onShareVideo(file: PlatformFile) {
+    private fun onShareVideo(file: PlatformFile) {
         viewModelScope.launch(Dispatchers.IO) {
             fileRepository.shareVideo(file)
         }
     }
 
-    fun setVideoUrl(string: String) {
+    private fun setVideoUrl(string: String) {
         state.update {
             it.copy(
                 videoUrlWithId = string,
@@ -65,7 +76,7 @@ class HomeViewModel(
         }
     }
 
-    fun onSelectedVideoQuality(videoQuality: VideoQuality) {
+    private fun onSelectedVideoQuality(videoQuality: VideoQuality) {
         state.update {
             it.copy(
                 selectedVideoQuality = videoQuality,
@@ -73,7 +84,7 @@ class HomeViewModel(
         }
     }
 
-    fun onDownloadVideo() {
+    private fun onDownloadVideo() {
         state.update {
             it.copy(
                 isDownload = true,
@@ -117,7 +128,7 @@ class HomeViewModel(
         }
     }
 
-    fun getVideoById() {
+    private fun getVideoById() {
         if (state.value.videoUrlWithId.isNotBlank()) {
             viewModelScope.launch(Dispatchers.IO) {
                 state.value.videoUrlWithId.let { url ->
@@ -166,7 +177,7 @@ class HomeViewModel(
         }
     }
 
-    private suspend fun getDiskInfo(){
+    private suspend fun getDiskInfo() {
         state.update {
             it.copy(
                 disk = fileRepository.getUsedSpace()

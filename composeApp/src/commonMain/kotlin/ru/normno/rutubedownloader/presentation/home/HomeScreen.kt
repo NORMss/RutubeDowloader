@@ -71,19 +71,16 @@ import kotlin.time.ExperimentalTime
 @Composable
 fun HomeScreen(
     state: HomeState,
-    setVideoUrl: (String) -> Unit,
-    onSelectedVideoQuality: (VideoQuality) -> Unit,
-    onDownloadVideo: () -> Unit,
-    onGetVideo: () -> Unit,
+    onAction: (HomeAction) -> Unit,
     onOpenVideo: (path: String) -> Unit,
-    onShareVideo: (PlatformFile) -> Unit,
-    onDeleteVideo: (PlatformFile) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val size = calculateWindowSizeClass()
 
-    val percentFreeDisk = (state.disk.free.toFloat() / state.disk.total.toFloat()).takeIf { !it.isNaN() } ?: 0f
-    val percentApp = (state.downloadedVideos.sumOf { it.size() }.toFloat() / state.disk.total.toFloat()).takeIf { !it.isNaN() } ?: 0f
+    val percentFreeDisk =
+        (state.disk.free.toFloat() / state.disk.total.toFloat()).takeIf { !it.isNaN() } ?: 0f
+    val percentApp = (state.downloadedVideos.sumOf { it.size() }
+        .toFloat() / state.disk.total.toFloat()).takeIf { !it.isNaN() } ?: 0f
 
     when (size.widthSizeClass) {
         WindowWidthSizeClass.Compact -> {
@@ -92,20 +89,36 @@ fun HomeScreen(
             ) {
                 VideoCard(
                     videoUrlWithId = state.videoUrlWithId,
-                    setVideoUrl = setVideoUrl,
+                    setVideoUrl = {
+                        onAction(HomeAction.SetVideoUrl(it))
+                    },
                     videoUrlM3U8 = state.videoUrlM3U8,
                     videoQualities = state.videoQualities,
                     selectedVideoQuality = state.selectedVideoQuality,
                     isDownload = state.isDownload,
                     downloadProgress = state.downloadProgress,
                     percentFreeDisk = percentFreeDisk,
-                    onSelectedVideoQuality = onSelectedVideoQuality,
-                    onDownloadVideo = onDownloadVideo,
-                    onGetVideo = onGetVideo,
+                    onSelectedVideoQuality = {
+                        onAction(HomeAction.OnSelectedVideoQuality(it))
+                    },
+                    onDownloadVideo = {
+                        onAction(
+                            HomeAction.OnDownloadVideo
+                        )
+                    },
+                    onGetVideo = {
+                        onAction(
+                            HomeAction.OnGetVideo
+                        )
+                    },
                     percentApp = percentApp,
                     onOpenVideo = onOpenVideo,
-                    onShare = onShareVideo,
-                    onDeleteVideo = onDeleteVideo,
+                    onShare = {
+                        onAction(HomeAction.OnShareVideo(it))
+                    },
+                    onDeleteVideo = {
+                        onAction(HomeAction.OnDeleteVideo(it))
+                    },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(
@@ -116,8 +129,12 @@ fun HomeScreen(
                 VideosList(
                     downloadedVideos = state.downloadedVideos,
                     onOpenVideo = onOpenVideo,
-                    onShareVideo = onShareVideo,
-                    onDeleteVideo = onDeleteVideo,
+                    onShareVideo = {
+                        onAction(HomeAction.OnShareVideo(it))
+                    },
+                    onDeleteVideo = {
+                        onAction(HomeAction.OnDeleteVideo(it))
+                    },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(
@@ -134,20 +151,36 @@ fun HomeScreen(
             ) {
                 VideoCard(
                     videoUrlWithId = state.videoUrlWithId,
-                    setVideoUrl = setVideoUrl,
+                    setVideoUrl = {
+                        onAction(HomeAction.SetVideoUrl(it))
+                    },
                     videoUrlM3U8 = state.videoUrlM3U8,
                     videoQualities = state.videoQualities,
                     selectedVideoQuality = state.selectedVideoQuality,
                     isDownload = state.isDownload,
                     downloadProgress = state.downloadProgress,
                     percentFreeDisk = percentFreeDisk,
-                    onSelectedVideoQuality = onSelectedVideoQuality,
+                    onSelectedVideoQuality = {
+                        onAction(HomeAction.OnSelectedVideoQuality(it))
+                    },
                     percentApp = percentApp,
-                    onDownloadVideo = onDownloadVideo,
-                    onGetVideo = onGetVideo,
+                    onDownloadVideo = {
+                        onAction(
+                            HomeAction.OnDownloadVideo
+                        )
+                    },
+                    onGetVideo = {
+                        onAction(
+                            HomeAction.OnGetVideo
+                        )
+                    },
                     onOpenVideo = onOpenVideo,
-                    onShare = onShareVideo,
-                    onDeleteVideo = onDeleteVideo,
+                    onShare = {
+                        onAction(HomeAction.OnShareVideo(it))
+                    },
+                    onDeleteVideo = {
+                        onAction(HomeAction.OnDeleteVideo(it))
+                    },
                     modifier = Modifier
                         .weight(1f)
                         .padding(
@@ -162,8 +195,12 @@ fun HomeScreen(
                 VideosList(
                     downloadedVideos = state.downloadedVideos,
                     onOpenVideo = onOpenVideo,
-                    onShareVideo = onShareVideo,
-                    onDeleteVideo = onDeleteVideo,
+                    onShareVideo = {
+                        onAction(HomeAction.OnShareVideo(it))
+                    },
+                    onDeleteVideo = {
+                        onAction(HomeAction.OnDeleteVideo(it))
+                    },
                     modifier = Modifier
                         .weight(1f)
                         .padding(

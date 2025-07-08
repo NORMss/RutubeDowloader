@@ -227,17 +227,12 @@ fun App() {
                 ) { paddingValues ->
                     HomeScreen(
                         state = state,
-                        setVideoUrl = viewModel::setVideoUrl,
-                        onSelectedVideoQuality = viewModel::onSelectedVideoQuality,
-                        onDownloadVideo = viewModel::onDownloadVideo,
-                        onGetVideo = viewModel::getVideoById,
+                        onAction = viewModel::onAction,
                         onOpenVideo = { path ->
                             videoManager.openVideo(
                                 path = path,
                             )
                         },
-                        onShareVideo = viewModel::onShareVideo,
-                        onDeleteVideo = viewModel::onDeleteFile,
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(paddingValues),
