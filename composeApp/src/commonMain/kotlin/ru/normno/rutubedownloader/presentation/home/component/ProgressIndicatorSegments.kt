@@ -1,8 +1,11 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package ru.normno.rutubedownloader.presentation.home.component
 
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -12,15 +15,14 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun LinearProgressIndicatorSegments(
+    segments: List<ProgressSegment>,
     modifier: Modifier = Modifier,
-    vararg segments: ProgressSegment,
-    trackColor: Color = Color.LightGray,
-    strokeCap: StrokeCap = StrokeCap.Butt
+    trackColor: Color =  ProgressIndicatorDefaults.linearTrackColor,
+    strokeCap: StrokeCap = ProgressIndicatorDefaults.LinearStrokeCap,
 ) {
     Canvas(
         modifier
-            .height(4.dp)
-            .fillMaxWidth()
+            .size(LinearIndicatorWidth, LinearIndicatorHeight)
     ) {
         val width = size.width
         val height = size.height
@@ -31,7 +33,7 @@ fun LinearProgressIndicatorSegments(
             start = Offset(0f, yOffset),
             end = Offset(width, yOffset),
             strokeWidth = height,
-            cap = StrokeCap.Butt
+            cap = strokeCap
         )
 
         var startFraction = 0f
@@ -59,3 +61,7 @@ data class ProgressSegment(
     val progress: Float = 0f,
     val color: Color,
 )
+
+internal val LinearIndicatorWidth = 240.dp
+
+internal val LinearIndicatorHeight = 4.dp

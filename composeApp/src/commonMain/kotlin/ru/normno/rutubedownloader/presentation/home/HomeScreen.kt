@@ -17,20 +17,15 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Download
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
@@ -50,13 +45,15 @@ import coil3.compose.AsyncImage
 import io.github.vinceglb.filekit.PlatformFile
 import io.github.vinceglb.filekit.name
 import io.github.vinceglb.filekit.path
+import io.github.vinceglb.filekit.size
 import io.ktor.util.PlatformUtils.IS_JVM
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
-import ru.normno.rutubedownloader.domain.model.Disk
 import ru.normno.rutubedownloader.domain.model.Video
 import ru.normno.rutubedownloader.presentation.common.calculateWindowSizeClass
 import ru.normno.rutubedownloader.presentation.home.component.DeleteVideoDialog
+import ru.normno.rutubedownloader.presentation.home.component.LinearProgressIndicatorSegments
+import ru.normno.rutubedownloader.presentation.home.component.ProgressSegment
 import ru.normno.rutubedownloader.presentation.home.component.VideoCard
 import ru.normno.rutubedownloader.util.dowload.Progress
 import ru.normno.rutubedownloader.util.dowload.Progress.formatSpeed
@@ -64,13 +61,9 @@ import ru.normno.rutubedownloader.util.snackbar.SnackbarController
 import ru.normno.rutubedownloader.util.snackbar.SnackbarEvent
 import ru.normno.rutubedownloader.util.video.ParseM3U8Playlist.VideoQuality
 import rutubedownloader.composeapp.generated.resources.Res
-import rutubedownloader.composeapp.generated.resources.cancel
-import rutubedownloader.composeapp.generated.resources.delete
-import rutubedownloader.composeapp.generated.resources.delete_video
 import rutubedownloader.composeapp.generated.resources.dont_exit_app
 import rutubedownloader.composeapp.generated.resources.get_video
 import rutubedownloader.composeapp.generated.resources.no_videos_downloaded
-import rutubedownloader.composeapp.generated.resources.sure_to_delete
 import rutubedownloader.composeapp.generated.resources.url_to_video
 import rutubedownloader.composeapp.generated.resources.video_to_buffer
 import kotlin.time.ExperimentalTime
@@ -88,6 +81,10 @@ fun HomeScreen(
     modifier: Modifier = Modifier,
 ) {
     val size = calculateWindowSizeClass()
+
+    val percentFreeDisk = (state.disk.free.toFloat() / state.disk.total.toFloat()).takeIf { !it.isNaN() } ?: 0f
+    val percentApp = (state.downloadedVideos.sumOf { it.size() }.toFloat() / state.disk.total.toFloat()).takeIf { !it.isNaN() } ?: 0f
+
     when (size.widthSizeClass) {
         WindowWidthSizeClass.Compact -> {
             Column(
@@ -101,10 +98,11 @@ fun HomeScreen(
                     selectedVideoQuality = state.selectedVideoQuality,
                     isDownload = state.isDownload,
                     downloadProgress = state.downloadProgress,
-                    disk = state.disk,
+                    percentFreeDisk = percentFreeDisk,
                     onSelectedVideoQuality = onSelectedVideoQuality,
                     onDownloadVideo = onDownloadVideo,
                     onGetVideo = onGetVideo,
+                    percentApp = percentApp,
                     onOpenVideo = onOpenVideo,
                     onShare = onShareVideo,
                     onDeleteVideo = onDeleteVideo,
@@ -142,8 +140,9 @@ fun HomeScreen(
                     selectedVideoQuality = state.selectedVideoQuality,
                     isDownload = state.isDownload,
                     downloadProgress = state.downloadProgress,
-                    disk = state.disk,
+                    percentFreeDisk = percentFreeDisk,
                     onSelectedVideoQuality = onSelectedVideoQuality,
+                    percentApp = percentApp,
                     onDownloadVideo = onDownloadVideo,
                     onGetVideo = onGetVideo,
                     onOpenVideo = onOpenVideo,
@@ -190,10 +189,11 @@ fun VideoCard(
     onSelectedVideoQuality: (VideoQuality) -> Unit = {},
     onDownloadVideo: () -> Unit = {},
     videoQualities: List<VideoQuality> = emptyList(),
+    percentApp: Float = 0f,
     selectedVideoQuality: VideoQuality? = null,
     isDownload: Boolean = false,
     downloadProgress: Progress.DownloadProgress,
-    disk: Disk,
+    percentFreeDisk: Float = 0f,
     modifier: Modifier = Modifier,
 ) {
     var isSelectedResolution by remember {
@@ -352,19 +352,21 @@ fun VideoCard(
                 }
             }
         }
-        Text(
-            text = "Total: ${disk.total.toFloat() / (1024 * 1024 * 1024)} " +
-                    "Free ${disk.free.toFloat() / (1024 * 1024 * 1024)}"
+        Spacer(
+            modifier = Modifier
+                .height(8.dp),
         )
-            LinearProgressIndicator(
-            progress = {
-                val value =
-                    (disk.free.toFloat() / disk.total.toFloat()).takeIf { !it.isNaN() } ?: 0f
-                1f - value
-            },
-            drawStopIndicator = {
-
-            }
+        LinearProgressIndicatorSegments(
+            segments = listOf(
+                ProgressSegment(
+                    progress = 1f - percentFreeDisk - percentApp,
+                    color = MaterialTheme.colorScheme.secondary,
+                ),
+                ProgressSegment(
+                    progress = percentApp,
+                    color = MaterialTheme.colorScheme.primary,
+                )
+            )
         )
     }
 }
