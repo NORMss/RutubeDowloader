@@ -6,25 +6,39 @@ import android.app.NotificationManager
 import android.app.Service
 import android.content.Context
 import android.content.Intent
+import android.os.Binder
 import android.os.Build
 import android.os.IBinder
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Download
 import androidx.core.app.NotificationCompat
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
+import ru.normno.rutubedownloader.domain.repository.DownloaderRepository
 
-class DownloadService : Service() {
+class DownloadService : Service(), KoinComponent {
 
-    override fun onBind(intent: Intent?): IBinder? {
-        return null
+    private val downloaderRepository: DownloaderRepository by inject()
+
+    inner class LocalBinder : Binder() {
+        fun getService(): DownloadService = this@DownloadService
+    }
+
+    private val binder = LocalBinder()
+
+    override fun onBind(intent: Intent): IBinder {
+        return binder
     }
 
     override fun onStartCommand(
         intent: Intent?,
         flags: Int,
-        startId: Int
+        startId: Int,
     ): Int {
-        when(intent?.action){
-            Actions.START.toString() -> {}
+        when (intent?.action) {
+            Actions.START.toString() -> {
+            }
+
             Actions.STOP.toString() -> {}
         }
         return super.onStartCommand(intent, flags, startId)
