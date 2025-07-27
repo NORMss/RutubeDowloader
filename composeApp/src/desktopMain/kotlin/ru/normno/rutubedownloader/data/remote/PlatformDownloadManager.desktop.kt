@@ -4,6 +4,6 @@ import ru.normno.rutubedownloader.domain.remote.DownloadManager
 
 actual fun getDownloadManager(): DownloadManager {
     return WindowsDownloadManager(
-        downloaderRepository = TODO()
+        TODO()
     )
 }
